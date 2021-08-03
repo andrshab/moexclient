@@ -8,6 +8,8 @@ data class News(
     @SerializedName("content")
     val responseParts: ResponseParts
 ) {
-    val map: Map<String, String>
-        get() = responseParts.columns.zip(responseParts.data[0]).toMap()
+    val map: Map<String, String>?
+        get() {
+            return if(responseParts.data.isNotEmpty()) responseParts.columns.zip(responseParts.data[0]).toMap() else null
+        }
 }
