@@ -3,7 +3,8 @@ package com.example.moexclient
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import com.example.moexclient.model.ApiConstants
+import com.example.moexclient.api.MoexService
+import com.example.moexclient.api.ApiConstants
 import com.example.moexclient.model.News
 import com.example.moexclient.model.NewsList
 import retrofit2.Call
