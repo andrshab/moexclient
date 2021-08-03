@@ -38,7 +38,6 @@ class MainActivity : AppCompatActivity() {
 
         moexService.news(35436).enqueue(object : Callback<News> {
             override fun onResponse(call: Call<News>, response: Response<News>) {
-//                Log.d("MainActNews", (response.body() as News).responseParts.data.isEmpty().toString())
                 val news = (response.body() as News).map
                 Log.d("MainActNews",  news?.get(ApiConstants.ID) + news?.get(ApiConstants.TEXT))
             }
