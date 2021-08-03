@@ -5,8 +5,8 @@ import android.os.Bundle
 import android.util.Log
 import com.example.moexclient.api.MoexService
 import com.example.moexclient.api.ApiConstants
-import com.example.moexclient.model.News
-import com.example.moexclient.model.NewsList
+import com.example.moexclient.data.News
+import com.example.moexclient.data.NewsList
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -37,9 +37,10 @@ class MainActivity : AppCompatActivity() {
         })
 
         moexService.news(35436).enqueue(object : Callback<News> {
+
             override fun onResponse(call: Call<News>, response: Response<News>) {
                 val news = (response.body() as News).map
-                Log.d("MainActNews",  news?.get(ApiConstants.ID) + news?.get(ApiConstants.TEXT))
+                Log.d("MainActNews",  news[ApiConstants.ID] + news[ApiConstants.TEXT])
             }
 
             override fun onFailure(call: Call<News>, t: Throwable) {

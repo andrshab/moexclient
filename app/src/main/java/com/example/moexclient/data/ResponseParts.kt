@@ -1,4 +1,4 @@
-package com.example.moexclient.model
+package com.example.moexclient.data
 
 import com.google.gson.annotations.SerializedName
 

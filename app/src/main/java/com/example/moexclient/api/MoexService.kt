@@ -1,7 +1,7 @@
 package com.example.moexclient.api
 
-import com.example.moexclient.model.News
-import com.example.moexclient.model.NewsList
+import com.example.moexclient.data.News
+import com.example.moexclient.data.NewsList
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
