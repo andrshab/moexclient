@@ -3,6 +3,7 @@ package com.example.moexclient
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import com.example.moexclient.model.ApiConstants
 import com.example.moexclient.model.News
 import com.example.moexclient.model.NewsList
 import retrofit2.Call
@@ -20,14 +21,12 @@ class MainActivity : AppCompatActivity() {
         (applicationContext as App).appComponent.inject(this)
         //https://medium.com/mindorks/kotlin-mvp-dagger-2-retrofit-sample-android-application-e6fe3af7acd
 
-        moexService.siteNews().enqueue(object : Callback<NewsList> {
+        moexService.newsList().enqueue(object : Callback<NewsList> {
 
             override fun onResponse(call: Call<NewsList>, response: Response<NewsList>) {
-                val rp = (response.body() as NewsList).responseParts
-                for (item in rp.data) {
-//                    Log.d("MainAct", item[rp.col("id")]
-//                            + item[rp.col("published_at")]
-//                            + item[rp.col("title")])
+                val newsList = (response.body() as NewsList)
+                for (news in newsList.listMap) {
+                    Log.d("MainAct", "id = " + news[ApiConstants.ID])
                 }
             }
 
@@ -36,10 +35,10 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        moexService.newsWithId(35436).enqueue(object : Callback<News> {
+        moexService.news(35436).enqueue(object : Callback<News> {
             override fun onResponse(call: Call<News>, response: Response<News>) {
-                val news = (response.body() as News)
-                Log.d("MainActNews",  news.title + news.publishedAt + news.text)
+                val news = (response.body() as News).map
+                Log.d("MainActNews",  news[ApiConstants.ID] + news[ApiConstants.TEXT])
             }
 
             override fun onFailure(call: Call<News>, t: Throwable) {

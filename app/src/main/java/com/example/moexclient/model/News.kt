@@ -8,12 +8,6 @@ class News constructor(
     @SerializedName("content")
     val responseParts: ResponseParts
 ) {
-    val id: String
-        get() = responseParts.data[0][responseParts.col("id")]
-    val title: String
-        get() = responseParts.data[0][responseParts.col("title")]
-    val publishedAt: String
-        get() = responseParts.data[0][responseParts.col("published_at")]
-    val text: String
-        get() = responseParts.data[0][responseParts.col("body")]
+    val map: Map<String, String>
+        get() = responseParts.columns.zip(responseParts.data[0]).toMap()
 }
