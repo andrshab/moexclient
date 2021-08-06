@@ -10,10 +10,10 @@ import retrofit2.http.Path
 
 interface MoexService {
     @GET("iss/sitenews.json")
-    fun newsList(): Call<NewsList>
+    suspend fun newsList(): NewsList
 
     @GET("iss/sitenews/{id}.json")
-    fun news(@Path(value = "id") newsId: Int): Call<News>
+    suspend fun news(@Path(value = "id") newsId: Int): News
 
     companion object Factory {
         fun create(): MoexService {

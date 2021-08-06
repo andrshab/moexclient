@@ -8,15 +8,23 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.moexclient.adapters.NewsListAdapter
+import com.example.moexclient.api.Exceptions
 import com.example.moexclient.api.MoexService
 import com.example.moexclient.data.NewsList
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
+import retrofit2.HttpException
 import retrofit2.Response
+import java.io.IOException
+import java.lang.Exception
 import javax.inject.Inject
 
 
@@ -46,16 +54,9 @@ class NewsListFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        moexService.newsList().enqueue(object: Callback<NewsList> {
-
-            override fun onResponse(call: Call<NewsList>, response: Response<NewsList>) {
-                val newsList = response.body() as NewsList
-                adapter.setData(newsList.listMap)
-            }
-
-            override fun onFailure(call: Call<NewsList>, t: Throwable) {
-                Log.d("NewsListFragment", t.toString())
-            }
-        })
+        lifecycleScope.launch(Exceptions.handler) {
+            val lm = moexService.newsList().listMap
+            adapter.setData(lm)
+        }
     }
 }
