@@ -1,17 +1,17 @@
 package com.example.moexclient.adapters
 
-import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.paging.PagingDataAdapter
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.moexclient.R
-import com.example.moexclient.api.ApiConstants
+import com.example.moexclient.data.NewsItem
 
 class NewsListAdapter() :
-    RecyclerView.Adapter<NewsListAdapter.ItemViewHolder>() {
-    var newsListMap: List<Map<String, String>> = mutableListOf()
+    PagingDataAdapter<NewsItem,NewsListAdapter.ItemViewHolder>(COMPARATOR) {
     var onItemClick: ((Int) -> Unit)? = null
 
     inner class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -20,7 +20,7 @@ class NewsListAdapter() :
 
         init {
             view.setOnClickListener {
-                onItemClick?.invoke(newsListMap[adapterPosition][ApiConstants.ID]?.toInt() ?: 0)
+                onItemClick?.invoke(getItem(adapterPosition)?.id ?: 0)
             }
         }
     }
@@ -31,18 +31,19 @@ class NewsListAdapter() :
     }
 
     override fun onBindViewHolder(holderItem: ItemViewHolder, position: Int) {
-        holderItem.titleTv.text = newsListMap[position][ApiConstants.TITLE]
-        holderItem.timeTv.text = newsListMap[position][ApiConstants.PUBLISHED_AT]
+
+        holderItem.titleTv.text = getItem(position)?.title
+        holderItem.timeTv.text = getItem(position)?.time
     }
 
-    override fun getItemCount(): Int {
-        return newsListMap.size
-    }
+    companion object {
+        private val COMPARATOR = object : DiffUtil.ItemCallback<NewsItem>() {
+            override fun areItemsTheSame(oldItem: NewsItem, newItem: NewsItem): Boolean =
+                oldItem.id == newItem.id
 
-    @SuppressLint("NotifyDataSetChanged")
-    fun setData(lm: List<Map<String, String>>) {
-        newsListMap = lm
-        notifyDataSetChanged()
+            override fun areContentsTheSame(oldItem: NewsItem, newItem: NewsItem): Boolean =
+                oldItem == newItem
+        }
     }
 
 }

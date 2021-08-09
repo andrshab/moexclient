@@ -1,18 +1,28 @@
 package com.example.moexclient.data
 
+import com.example.moexclient.api.ApiConstants
 import com.google.gson.annotations.SerializedName
 
 data class NewsList(
     @SerializedName("sitenews")
-    val responseParts: ResponseParts
+    val responseParts: ResponseParts,
+    @SerializedName("sitenews.cursor")
+    val cursorParts: ResponseParts
 ) {
-    val listMap: List<Map<String, String>>
+    val list: List<NewsItem>
         get() {
-            val lm = mutableListOf<Map<String, String>>()
+            val list = mutableListOf<NewsItem>()
             for (item in responseParts.data) {
-                lm.add(responseParts.columns.zip(item).toMap())
+                val lm = responseParts.columns.zip(item).toMap()
+                list.add(NewsItem(
+                    lm[ApiConstants.ID]?.toInt(),
+                    lm[ApiConstants.TITLE],
+                    lm[ApiConstants.PUBLISHED_AT]
+                ))
             }
-            return lm
+            return list
         }
 }
+
+data class NewsItem(val id: Int? = 0, val title: String? = "null", val time: String? = "null")
 

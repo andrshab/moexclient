@@ -8,16 +8,23 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.Toast
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
+import androidx.paging.PagingData
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.moexclient.adapters.NewsListAdapter
 import com.example.moexclient.api.Exceptions
 import com.example.moexclient.api.MoexService
 import com.example.moexclient.data.NewsList
+import com.example.moexclient.data.NewsListRepository
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
@@ -49,14 +56,14 @@ class NewsListFragment : Fragment() {
         }
         recyclerView.adapter = adapter
 
-        return root
-    }
+        val repository = NewsListRepository(moexService)
+        val viewModel = NewsListViewModel(repository)
 
-    override fun onResume() {
-        super.onResume()
-        lifecycleScope.launch(Exceptions.handler) {
-            val lm = moexService.newsList().listMap
-            adapter.setData(lm)
+        lifecycleScope.launch {
+            viewModel.searchNewsList().collectLatest { pagingData ->
+                adapter.submitData(pagingData) }
         }
+
+        return root
     }
 }
