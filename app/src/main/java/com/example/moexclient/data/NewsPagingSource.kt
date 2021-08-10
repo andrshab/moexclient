@@ -3,7 +3,7 @@ package com.example.moexclient.data
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.example.moexclient.api.MoexService
-import com.example.moexclient.data.NewsListRepository.Companion.NETWORK_PAGE_SIZE
+import com.example.moexclient.data.MoexRepository.Companion.NETWORK_PAGE_SIZE
 
 private const val NEWS_DEFAULT_START_ID = 0
 class NewsPagingSource(

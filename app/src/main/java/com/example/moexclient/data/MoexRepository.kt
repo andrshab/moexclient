@@ -8,9 +8,8 @@ import com.example.moexclient.api.MoexService
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class NewsListRepository(private val service: MoexService) {
-
-    fun getSearchResultStream(): Flow<PagingData<NewsItem>> {
+class MoexRepository @Inject constructor(private val service: MoexService) {
+    fun getNewsListStream(): Flow<PagingData<NewsItem>> {
         return Pager(
             config = PagingConfig(
                 pageSize = NETWORK_PAGE_SIZE,
@@ -18,6 +17,10 @@ class NewsListRepository(private val service: MoexService) {
             ),
             pagingSourceFactory = { NewsPagingSource(service) }
         ).flow
+    }
+
+    suspend fun getNews(id: Int): News {
+        return service.news(id)
     }
 
     companion object {

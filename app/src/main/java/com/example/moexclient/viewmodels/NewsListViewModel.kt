@@ -1,18 +1,19 @@
-package com.example.moexclient
+package com.example.moexclient.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.example.moexclient.data.NewsItem
-import com.example.moexclient.data.NewsListRepository
+import com.example.moexclient.data.MoexRepository
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 
-class NewsListViewModel(private val repository: NewsListRepository): ViewModel() {
+class NewsListViewModel @Inject constructor(private val repository: MoexRepository) : ViewModel() {
+
 
     fun searchNewsList(): Flow<PagingData<NewsItem>> =
-        repository.getSearchResultStream()
+        repository.getNewsListStream()
             .cachedIn(viewModelScope)
 
 }

@@ -33,7 +33,7 @@ class NewsListAdapter() :
     override fun onBindViewHolder(holderItem: ItemViewHolder, position: Int) {
 
         holderItem.titleTv.text = getItem(position)?.title
-        holderItem.timeTv.text = getItem(position)?.time
+        holderItem.timeTv.text = getItem(position)?.id.toString()
     }
 
     companion object {
