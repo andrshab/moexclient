@@ -19,8 +19,8 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository)
     val secName: MutableLiveData<String> = MutableLiveData()
     fun updateChart() {
         viewModelScope.launch {
-            val list = repository.getTopSecsData()
-            val randomSecsItem = list.secIdList.random()
+            val topSecsData = repository.getTopSecsData()
+            val randomSecsItem = topSecsData.secIdList.random()
             val boardId = randomSecsItem.boardId
             val secId = randomSecsItem.secId
             var secData = repository.getSecOnBoardData(secId, boardId = boardId, sortOrder = "asc")
