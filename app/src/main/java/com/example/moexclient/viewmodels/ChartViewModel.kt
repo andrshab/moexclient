@@ -6,11 +6,13 @@ import androidx.lifecycle.*
 import com.example.moexclient.api.Exceptions
 import com.example.moexclient.data.MoexRepository
 import com.example.moexclient.data.Price
+import com.github.mikephil.charting.charts.CombinedChart
 import com.github.mikephil.charting.data.CombinedData
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import kotlinx.coroutines.launch
+import org.apache.commons.math3.geometry.euclidean.twod.Line
 import org.nield.kotlinstatistics.standardDeviation
 import java.text.SimpleDateFormat
 import java.util.*
@@ -25,6 +27,7 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository)
     var totalClicks: Int = 0
     var trueClicks: Int = 0
     var trueLineColor: Int = 0
+    var realPrices: List<Price> = listOf()
     fun updateChart() {
         viewModelScope.launch(Exceptions.handler) {
             val topSecsData = repository.getTopSecsData()
@@ -41,7 +44,7 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository)
                 secData = repository.getSecOnBoardData(secId, boardId = boardId, from = randDate)
                 //split prices
                 val (primary, real, fake) = splitPrices(secData.prices)
-
+                realPrices = real
 
                 var realColor: Int
                 var fakeColor: Int
@@ -54,9 +57,9 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository)
                 }
                 trueLineColor = realColor
 
-                val primaryDataSet = dataSet(primary, Color.BLUE, true)
-                val realDataSet = dataSet(real, realColor, false)
-                val fakeDataSet = dataSet(fake, fakeColor, false)
+                val primaryDataSet = dataSet(primary, Color.BLUE, true, "primary")
+                val realDataSet = dataSet(real, realColor, false, "real")
+                val fakeDataSet = dataSet(fake, fakeColor, false,"fake")
                 val lineData = LineData()
                 lineData.addDataSet(primaryDataSet)
                 lineData.addDataSet(realDataSet)
@@ -75,6 +78,12 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository)
 
         }
 
+    }
+
+    fun showAnswer() {
+        for(price in realPrices) {
+            chartData.value?.lineData?.addEntry(Entry(price.date.time.toFloat(), price.value),0)
+        }
     }
 
     fun isTrueColor(clickedColor: Int): Boolean {
@@ -120,8 +129,8 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository)
 
 
     private fun fakeValues(real: List<Price>): List<Float> {
-        val minFake = real.reduce(Price.Compare::min)
-        val maxFake = real.reduce(Price.Compare::max)
+//        val minFake = real.reduce(Price.Compare::min)
+//        val maxFake = real.reduce(Price.Compare::max)
         val fakeValues = mutableListOf<Float>()
         val base = mutableListOf<Float>()
         val realValues = mutableListOf<Float>()
@@ -135,16 +144,15 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository)
         Log.d("ChartViewModel", "sigma = $sigma, average = $average, randNum = $baseRandNum")
 
         var left = 0.0f
-        var right = Random().nextFloat()*sigma.toFloat()//(maxFake.value-minFake.value)
+        var right = Random().nextFloat()*sigma.toFloat()
         var j=0
         for(i in real.indices) {
-//            base.add(sigma.toFloat()*Random().nextFloat())
             base.add(left + j*(right-left)/baseRandNum)
             j += 1
             if(i%baseRandNum == 0 && i > 0){
                 j = 0
                 left = right
-                right = Random().nextFloat()*sigma.toFloat()//(maxFake.value-minFake.value)
+                right = Random().nextFloat()*sigma.toFloat()
             }
         }
 
@@ -153,20 +161,18 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository)
                 fakeValues.add(real[0].value)
             } else {
                 fakeValues.add(real[0].value + base[i])
-//                fakeValues.add(real[i].value + Random().nextFloat()*(maxFake.value-minFake.value))
-//                fakeValues.add(real[real.size-1-i].value)
             }
 
         }
         return fakeValues
     }
 
-    private fun dataSet(prices: List<Price>, color: Int, filled: Boolean): LineDataSet {
+    private fun dataSet(prices: List<Price>, color: Int, filled: Boolean, label: String): LineDataSet {
         val entries = mutableListOf<Entry>()
         for (price in prices) {
             entries.add(Entry(price.date.time.toFloat(), price.value))
         }
-        val dataSet = LineDataSet(entries, "")
+        val dataSet = LineDataSet(entries, label)
         dataSet.setDrawFilled(filled)
         dataSet.setDrawValues(false)
         dataSet.fillColor = Color.BLUE

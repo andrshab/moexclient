@@ -6,4 +6,5 @@
     <string name="red_button_label">BEAR</string>
     <string name="green_button_label">BULL</string>
     <string name="default_statistics">0%</string>
+    <string name="next_button_label">Next</string>
 </resources>

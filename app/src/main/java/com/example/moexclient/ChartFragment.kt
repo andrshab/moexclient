@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
-import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.moexclient.viewmodels.ChartViewModel
@@ -25,6 +24,7 @@ class ChartFragment : Fragment() {
     private lateinit var viewModel: ChartViewModel
     lateinit var greenButton: Button
     lateinit var redButton: Button
+    lateinit var nextButton: Button
     lateinit var chart: CombinedChart
     lateinit var secNameTv: TextView
     lateinit var statisticsTv: TextView
@@ -49,12 +49,24 @@ class ChartFragment : Fragment() {
         greenButton = root.findViewById(R.id.green_button)
         redButton = root.findViewById((R.id.red_button))
         statisticsTv = root.findViewById(R.id.statistics_tv)
+        nextButton = root.findViewById(R.id.next_button)
+
+        setupSelectUi()
+
         greenButton.setOnClickListener{
-            viewModel.isTrueColor(Color.GREEN)
-            viewModel.updateChart()
+            setStatsColor(viewModel.isTrueColor(Color.GREEN))
+            setupNextUi()
+            viewModel.showAnswer()
+            chart.invalidate()
         }
         redButton.setOnClickListener{
-            viewModel.isTrueColor(Color.RED)
+            setStatsColor(viewModel.isTrueColor(Color.RED))
+            setupNextUi()
+            viewModel.showAnswer()
+            chart.invalidate()
+        }
+        nextButton.setOnClickListener {
+            setupSelectUi()
             viewModel.updateChart()
         }
 
@@ -73,6 +85,24 @@ class ChartFragment : Fragment() {
             viewModel.updateChart()
         }
         return root
+    }
+
+    private fun setupSelectUi() {
+        greenButton.visibility = View.VISIBLE
+        redButton.visibility = View.VISIBLE
+        nextButton.visibility = View.GONE
+    }
+    private fun setupNextUi() {
+        greenButton.visibility = View.GONE
+        redButton.visibility = View.GONE
+        nextButton.visibility = View.VISIBLE
+    }
+    private fun setStatsColor(isAnswerTrue: Boolean) {
+        if(isAnswerTrue){
+            statisticsTv.setTextColor(Color.GREEN)
+        } else {
+            statisticsTv.setTextColor(Color.RED)
+        }
     }
 
 }
