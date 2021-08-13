@@ -108,7 +108,6 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository)
             real.add(prices[i])
         }
         val fake = fakePrices(real)
-
         return Split(primary, real, fake)
     }
 
