@@ -27,6 +27,7 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository)
     var totalClicks: Int = 0
     var trueClicks: Int = 0
     var trueLineColor: Int = 0
+
     var realPrices: List<Price> = listOf()
     fun updateChart() {
         viewModelScope.launch(Exceptions.handler) {
