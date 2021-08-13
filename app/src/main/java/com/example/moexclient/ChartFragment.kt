@@ -2,38 +2,32 @@ package com.example.moexclient
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
-import com.example.moexclient.data.MoexRepository
 import com.example.moexclient.viewmodels.ChartViewModel
 import com.example.moexclient.viewmodels.ChartViewModelFactory
-import com.example.moexclient.viewmodels.NewsViewModel
-import com.example.moexclient.viewmodels.NewsViewModelFactory
-import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.charts.CombinedChart
 import com.github.mikephil.charting.components.XAxis
-import com.github.mikephil.charting.data.LineDataSet
-import com.github.mikephil.charting.data.Entry
-import com.github.mikephil.charting.data.LineData
-import kotlinx.coroutines.launch
+import com.github.mikephil.charting.data.CombinedData
 import javax.inject.Inject
-import kotlin.random.Random
 
 
 class ChartFragment : Fragment() {
 
     @Inject lateinit var viewModelFactory: ChartViewModelFactory
     private lateinit var viewModel: ChartViewModel
-    lateinit var blueButton: Button
-    lateinit var chart: LineChart
+    lateinit var greenButton: Button
+    lateinit var redButton: Button
+    lateinit var chart: CombinedChart
     lateinit var secNameTv: TextView
+    lateinit var statisticsTv: TextView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -52,20 +46,33 @@ class ChartFragment : Fragment() {
         chart.legend.isEnabled = false
         chart.description.text = ""
         secNameTv = root.findViewById(R.id.sec_name_tv)
-        blueButton = root.findViewById(R.id.blue_button)
-        blueButton.setOnClickListener{updateChart()}
-        val chartDataObserver = Observer<LineData> {
+        greenButton = root.findViewById(R.id.green_button)
+        redButton = root.findViewById((R.id.red_button))
+        statisticsTv = root.findViewById(R.id.statistics_tv)
+        greenButton.setOnClickListener{
+            viewModel.isTrueColor(Color.GREEN)
+            viewModel.updateChart()
+        }
+        redButton.setOnClickListener{
+            viewModel.isTrueColor(Color.RED)
+            viewModel.updateChart()
+        }
+
+        val chartDataObserver = Observer<CombinedData> {
             chart.data = it
             chart.invalidate()
         }
         val secNameObserver = Observer<String> { secNameTv.text = it }
+        val xAxisMaxObserver = Observer<Float> { chart.xAxis.axisMaximum = it }
+        val statisticsObserver = Observer<Int> { statisticsTv.text = "$it%" }
         viewModel.chartData.observe(viewLifecycleOwner, chartDataObserver)
         viewModel.secName.observe(viewLifecycleOwner, secNameObserver)
+        viewModel.xAxisMax.observe(viewLifecycleOwner, xAxisMaxObserver)
+        viewModel.statistics.observe(viewLifecycleOwner, statisticsObserver)
+        if(chart.isEmpty) {
+            viewModel.updateChart()
+        }
         return root
-    }
-
-    private fun updateChart() {
-        viewModel.updateChart()
     }
 
 }

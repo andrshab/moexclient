@@ -2,4 +2,8 @@
     <string name="app_name">MoexClient</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="statistics_label">Верных прогнозов</string>
+    <string name="red_button_label">BEAR</string>
+    <string name="green_button_label">BULL</string>
+    <string name="default_statistics">0%</string>
 </resources>
