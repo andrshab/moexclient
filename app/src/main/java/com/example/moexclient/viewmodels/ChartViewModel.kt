@@ -21,8 +21,12 @@ import javax.inject.Inject
 
 
 class ChartViewModel @Inject constructor(private val repository: MoexRepository) : ViewModel() {
-    val chartData: MutableLiveData<CombinedData> = MutableLiveData()
+    val chartData: MutableLiveData<LineData> = MutableLiveData()
     val secName: MutableLiveData<String> = MutableLiveData()
+    var prices: List<Price> = listOf()
+    var currentEntryIndex: Int = 0
+    val currentStockPrice: MutableLiveData<Float> = MutableLiveData()
+    val chartEdge: MutableLiveData<Edges> = MutableLiveData()
 
     fun updateChart() {
         viewModelScope.launch(Exceptions.handler) {
@@ -37,22 +41,54 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository)
                 val endDate = secData.prices[0].date
                 val randDate = randDateString(startDate, endDate)
                 secData = repository.getSecOnBoardData(secId, boardId = boardId, from = randDate)
+                prices = secData.prices
 
-                val dataSet = dataSet(secData.prices, Color.BLUE, true, "primary")
-                val lineData = LineData()
-                lineData.addDataSet(dataSet)
-                val combinedData = CombinedData()
-                combinedData.setData(lineData)
+                chartEdge.value = Edges(
+                    prices.reduce(Price.Compare::minDate).date.time.toFloat(),
+                    prices.reduce(Price.Compare::maxDate).date.time.toFloat(),
+                    prices.reduce(Price.Compare::minVal).value,
+                    prices.reduce(Price.Compare::maxVal).value
+                )
 
-                chartData.value = combinedData
+
+                val dataSet = emptyDataSet(Color.BLUE, true, "primary")
+                val lineData = LineData(dataSet)
+
+                chartData.value = lineData
                 secName.value = randomSecsItem.name
             } else {
                 secName.value = "No data for ${randomSecsItem.name}"
-                chartData.value?.setData(LineData())
+                chartData.value = LineData()
             }
 
         }
 
+    }
+
+    fun showNextPrice(): Boolean {
+        val dataSet = dataSet(prices.subList(0, currentEntryIndex), Color.BLUE, true, "primary")
+        val lineData = LineData(dataSet)
+        if(currentEntryIndex-1 > 0) {
+            currentStockPrice.value = prices[currentEntryIndex-1].value
+        }
+        if(currentEntryIndex < prices.size) {
+            chartData.value = lineData
+            currentEntryIndex += 1
+            return true
+        } else {
+            return false
+        }
+    }
+
+    private fun emptyDataSet(color: Int, filled: Boolean, label: String): LineDataSet {
+        val entries = mutableListOf<Entry>()
+        val dataSet = LineDataSet(entries, label)
+        dataSet.setDrawFilled(filled)
+        dataSet.setDrawValues(true)
+        dataSet.fillColor = Color.BLUE
+        dataSet.color = color
+        dataSet.setDrawCircles(false)
+        return dataSet
     }
 
     private fun dataSet(prices: List<Price>, color: Int, filled: Boolean, label: String): LineDataSet {
@@ -62,7 +98,7 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository)
         }
         val dataSet = LineDataSet(entries, label)
         dataSet.setDrawFilled(filled)
-        dataSet.setDrawValues(false)
+        dataSet.setDrawValues(true)
         dataSet.fillColor = Color.BLUE
         dataSet.color = color
         dataSet.setDrawCircles(false)
@@ -84,3 +120,5 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository)
     }
 
 }
+
+data class Edges(val xMin: Float, val xMax: Float, val yMin: Float, val yMax: Float)
