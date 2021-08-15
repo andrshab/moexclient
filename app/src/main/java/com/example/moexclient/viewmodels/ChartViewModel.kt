@@ -27,6 +27,7 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository)
     var currentEntryIndex: Int = 0
     val currentStockPrice: MutableLiveData<Float> = MutableLiveData()
     val chartEdge: MutableLiveData<Edges> = MutableLiveData()
+    val isFinished: MutableLiveData<Boolean> = MutableLiveData()
 
     fun updateChart() {
         viewModelScope.launch(Exceptions.handler) {
@@ -51,10 +52,11 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository)
                 )
 
 
-                val dataSet = emptyDataSet(Color.BLUE, true, "primary")
-                val lineData = LineData(dataSet)
-
-                chartData.value = lineData
+//                val dataSet = emptyDataSet(Color.BLUE, true, "primary")
+//                val lineData = LineData(dataSet)
+//
+//                chartData.value = lineData
+                showNextPrice()
                 secName.value = randomSecsItem.name
             } else {
                 secName.value = "No data for ${randomSecsItem.name}"
@@ -76,6 +78,8 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository)
             currentEntryIndex += 1
             return true
         } else {
+            isFinished.value = true
+            currentEntryIndex = 0
             return false
         }
     }

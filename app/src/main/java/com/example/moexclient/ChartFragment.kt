@@ -7,6 +7,7 @@ import android.view.*
 import androidx.fragment.app.Fragment
 import android.widget.Button
 import android.widget.TextView
+import android.widget.ToggleButton
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -34,7 +35,8 @@ class ChartFragment : Fragment() {
     private lateinit var chart: LineChart
     private lateinit var secNameTv: TextView
     private lateinit var stocksTv: TextView
-    lateinit var job: Job
+    private lateinit var toggleButton: ToggleButton
+    var job: Job? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -65,15 +67,18 @@ class ChartFragment : Fragment() {
         secNameTv = root.findViewById(R.id.sec_name_tv)
         nextButton = root.findViewById(R.id.next_button)
         stocksTv = root.findViewById(R.id.stocks_tv)
-
-        setupNextUi()
+        toggleButton = root.findViewById(R.id.toggle_button)
+        resetUi()
 
         nextButton.setOnClickListener {
-            chart.xAxis.axisMaximum
-            if(job.isCancelled){
+            resetUi()
+            viewModel.updateChart()
+        }
+        toggleButton.setOnCheckedChangeListener { buttonView, isChecked ->
+            if(isChecked){
                 viewModel.showNextPrice()
             } else {
-                job.cancel()
+                job?.cancel()
             }
         }
         val chartDataObserver = Observer<LineData> {
@@ -81,7 +86,9 @@ class ChartFragment : Fragment() {
                 chart.data = it
                 chart.invalidate()
                 delay(100)
-                viewModel.showNextPrice()
+                if(toggleButton.isChecked){
+                    viewModel.showNextPrice()
+                }
             }
         }
         val secNameObserver = Observer<String> { secNameTv.text = it }
@@ -90,10 +97,14 @@ class ChartFragment : Fragment() {
             chart.xAxis.axisMinimum = it.xMin
             chart.xAxis.axisMaximum = it.xMax
         }
+        val isFinishedObserver = Observer<Boolean> {
+            if(it) setupNextUi()
+        }
         viewModel.chartData.observe(viewLifecycleOwner, chartDataObserver)
         viewModel.secName.observe(viewLifecycleOwner, secNameObserver)
         viewModel.currentStockPrice.observe(viewLifecycleOwner, currentStockPriceObserver)
         viewModel.chartEdge.observe(viewLifecycleOwner, chartEdgesObserver)
+        viewModel.isFinished.observe(viewLifecycleOwner, isFinishedObserver)
         if(chart.isEmpty) {
             viewModel.updateChart()
         }
@@ -102,9 +113,12 @@ class ChartFragment : Fragment() {
 
     private fun resetUi() {
         nextButton.visibility = View.GONE
+        toggleButton.visibility = View.VISIBLE
+        toggleButton.isChecked = false
     }
     private fun setupNextUi() {
         nextButton.visibility = View.VISIBLE
+        toggleButton.visibility = View.GONE
     }
 
 }
