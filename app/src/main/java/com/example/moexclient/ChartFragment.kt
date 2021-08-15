@@ -2,10 +2,9 @@ package com.example.moexclient
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.lifecycle.Observer
@@ -16,18 +15,27 @@ import com.github.mikephil.charting.charts.CombinedChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.CombinedData
 import javax.inject.Inject
+import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
+import com.github.mikephil.charting.components.LimitLine
+import com.github.mikephil.charting.components.YAxis
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.highlight.Highlight
+import com.github.mikephil.charting.listener.ChartTouchListener
+import com.github.mikephil.charting.listener.OnChartGestureListener
+
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 class ChartFragment : Fragment() {
 
     @Inject lateinit var viewModelFactory: ChartViewModelFactory
     private lateinit var viewModel: ChartViewModel
-    lateinit var greenButton: Button
-    lateinit var redButton: Button
-    lateinit var nextButton: Button
-    lateinit var chart: CombinedChart
-    lateinit var secNameTv: TextView
-    lateinit var statisticsTv: TextView
+    private lateinit var nextButton: Button
+    private lateinit var chart: GameChart
+    private lateinit var secNameTv: TextView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,64 +53,48 @@ class ChartFragment : Fragment() {
         chart.xAxis.labelCount = 3
         chart.legend.isEnabled = false
         chart.description.text = ""
+        chart.onChartGestureListener = object : OnChartTapListener{
+            override fun onChartSingleTapped(me: MotionEvent?) {
+                val touchPoint = chart.getValuesByTouchPoint(me?.x?:0f, me?.y?:0f, YAxis.AxisDependency.LEFT)
+                Log.d("ChartFragment", "x = ${touchPoint.x.toFloat()}, y = ${touchPoint.y.toFloat()}")
+                val ll = LimitLine(touchPoint.y.toFloat())
+                ll.lineWidth = 1f
+                ll.lineColor = Color.BLACK
+                chart.axisLeft.addLimitLine(ll)
+            }
+        }
         secNameTv = root.findViewById(R.id.sec_name_tv)
-        greenButton = root.findViewById(R.id.green_button)
-        redButton = root.findViewById((R.id.red_button))
-        statisticsTv = root.findViewById(R.id.statistics_tv)
         nextButton = root.findViewById(R.id.next_button)
 
-        setupSelectUi()
+        setupNextUi()
 
-        greenButton.setOnClickListener{
-            setStatsColor(viewModel.isTrueColor(Color.GREEN))
-            setupNextUi()
-            viewModel.showAnswer()
-            chart.invalidate()
-        }
-        redButton.setOnClickListener{
-            setStatsColor(viewModel.isTrueColor(Color.RED))
-            setupNextUi()
-            viewModel.showAnswer()
-            chart.invalidate()
-        }
         nextButton.setOnClickListener {
-            setupSelectUi()
-            viewModel.updateChart()
+            if(chart.isPaused()) {
+                chart.resume()
+            } else {
+                chart.pause()
+            }
+
         }
 
         val chartDataObserver = Observer<CombinedData> {
             chart.data = it
-            chart.invalidate()
+            chart.start()
         }
         val secNameObserver = Observer<String> { secNameTv.text = it }
-        val xAxisMaxObserver = Observer<Float> { chart.xAxis.axisMaximum = it }
-        val statisticsObserver = Observer<Int> { statisticsTv.text = "$it%" }
         viewModel.chartData.observe(viewLifecycleOwner, chartDataObserver)
         viewModel.secName.observe(viewLifecycleOwner, secNameObserver)
-        viewModel.xAxisMax.observe(viewLifecycleOwner, xAxisMaxObserver)
-        viewModel.statistics.observe(viewLifecycleOwner, statisticsObserver)
         if(chart.isEmpty) {
             viewModel.updateChart()
         }
         return root
     }
 
-    private fun setupSelectUi() {
-        greenButton.visibility = View.VISIBLE
-        redButton.visibility = View.VISIBLE
+    private fun resetUi() {
         nextButton.visibility = View.GONE
     }
     private fun setupNextUi() {
-        greenButton.visibility = View.GONE
-        redButton.visibility = View.GONE
         nextButton.visibility = View.VISIBLE
-    }
-    private fun setStatsColor(isAnswerTrue: Boolean) {
-        if(isAnswerTrue){
-            statisticsTv.setTextColor(Color.GREEN)
-        } else {
-            statisticsTv.setTextColor(Color.RED)
-        }
     }
 
 }
