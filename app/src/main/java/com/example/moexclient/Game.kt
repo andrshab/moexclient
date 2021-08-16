@@ -1,6 +1,7 @@
 package com.example.moexclient
 
 import com.example.moexclient.data.Price
+import kotlin.math.floor
 
 class Game {
 
@@ -13,12 +14,11 @@ class Game {
     var startSum: Float = 0f
 
     fun reset(prices: List<Price>) {
-        val averagePrice = prices.map { it.value }.average()
         stocksPrice = prices.last().value
         stocksNumber = 100
         stocks = stocksPrice * stocksNumber
         startStocks = stocks
-        bank = (stocksNumber * averagePrice).toFloat()
+        bank = stocks
         startBank = bank
         startSum = startBank + startStocks
     }
@@ -27,6 +27,10 @@ class Game {
             stocksNumber += number
             stocks = stocksPrice * stocksNumber
             bank -= stocksPrice * number
+        } else {
+            stocksNumber += (bank/stocksPrice).toInt()
+            stocks = stocksPrice * stocksNumber
+            bank -= stocksPrice * (bank/stocksPrice).toInt()
         }
     }
     fun sell(number: Int) {
@@ -34,9 +38,13 @@ class Game {
             stocksNumber -= number
             stocks = stocksPrice * stocksNumber
             bank += stocksPrice * number
+        } else {
+            bank += stocksPrice * stocksNumber
+            stocksNumber -= stocksNumber
+            stocks = stocksPrice * stocksNumber
         }
     }
     object CONSTANTS {
-        const val durationMillis = 60000
+        const val durationMillis = 30000
     }
 }

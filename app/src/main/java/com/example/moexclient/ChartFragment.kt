@@ -14,6 +14,7 @@ import com.example.moexclient.viewmodels.ChartViewModel
 import com.example.moexclient.viewmodels.ChartViewModelFactory
 import com.example.moexclient.viewmodels.Edges
 import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.XAxis
 import javax.inject.Inject
 import com.github.mikephil.charting.data.LineData
@@ -33,8 +34,6 @@ class ChartFragment : Fragment() {
     private lateinit var buyButton: Button
     private lateinit var sellButton: Button
     private lateinit var bankTv: TextView
-    private lateinit var stocksNp: NumberPicker
-    private lateinit var hintTv: TextView
     private lateinit var sumTv: TextView
     private lateinit var startSumTv: TextView
 
@@ -54,6 +53,8 @@ class ChartFragment : Fragment() {
         chart.xAxis.labelCount = 3
         chart.legend.isEnabled = false
         chart.description.text = ""
+        chart.setTouchEnabled(false)
+        chart.setScaleEnabled(false)
         secNameTv = root.findViewById(R.id.sec_name_tv)
         nextButton = root.findViewById(R.id.next_button)
         buyButton = root.findViewById(R.id.buy_button)
@@ -61,13 +62,8 @@ class ChartFragment : Fragment() {
         stocksTv = root.findViewById(R.id.stocks_tv)
         toggleButton = root.findViewById(R.id.toggle_button)
         bankTv = root.findViewById(R.id.bank_tv)
-        stocksNp = root.findViewById(R.id.number_picker)
-        hintTv = root.findViewById(R.id.stocks_hint)
         sumTv = root.findViewById(R.id.sum_tv)
         startSumTv = root.findViewById(R.id.startsum_tv)
-        stocksNp.maxValue = 100
-        stocksNp.minValue = 0
-        stocksNp.value = 10
         resetUi()
 
         nextButton.setOnClickListener {
@@ -80,13 +76,10 @@ class ChartFragment : Fragment() {
             }
         }
         buyButton.setOnClickListener {
-            viewModel.buy(stocksNp.value)
+            viewModel.buyAll()
         }
         sellButton.setOnClickListener {
-            viewModel.sell(stocksNp.value)
-        }
-        stocksNp.setOnValueChangedListener { picker, oldVal, newVal ->
-            hintTv.text = "On sum: ${viewModel.game.stocksPrice * newVal}"
+            viewModel.sellAll()
         }
         val priceDataObserver = Observer<LineData> {
             val curPrice = viewModel.currentPrice(
@@ -95,7 +88,6 @@ class ChartFragment : Fragment() {
             val curStocksNumber = viewModel.game.stocksNumber
             val sum = curPrice * curStocksNumber + viewModel.game.bank
 
-            hintTv.text = "On sum: ${viewModel.game.stocksPrice * stocksNp.value}"
             bankTv.text = "${viewModel.game.bank}: ${floor(viewModel.game.bank/sum*100)}%"
             stocksTv.text = "${curPrice * curStocksNumber}: ${floor(curPrice * curStocksNumber/sum*100)}%"
             startSumTv.text = viewModel.game.startSum.toString()
@@ -114,8 +106,20 @@ class ChartFragment : Fragment() {
             chart.xAxis.axisMinimum = it.xMin
             chart.xAxis.axisMaximum = it.xMax
         }
-        val isFinishedObserver = Observer<Boolean> {
-            if(it) setupNextUi()
+        val isGameRunningObserver = Observer<Boolean> {
+            val y = (chart.data.getDataSetByLabel("primary", true) as LineDataSet).values.last().y
+            val ll = LimitLine(y)
+            ll.lineWidth = 2f
+            ll.lineColor = Color.BLACK
+            if(it) {
+                ll.enableDashedLine(10f, 10f, 0f)
+                chart.axisLeft.removeAllLimitLines()
+            } else {
+                setupNextUi()
+            }
+
+            chart.axisLeft.addLimitLine(ll)
+            chart.invalidate()
         }
         val bankObserver = Observer<Float> { bankTv.text = "${it}: ${floor(it/(viewModel.game.stocks + it)*100)}%"}
         val stocksObserver = Observer<Float> { stocksTv.text = "${it}: ${floor(it/(it + viewModel.game.bank)*100)}%" }
@@ -132,7 +136,7 @@ class ChartFragment : Fragment() {
         viewModel.priceData.observe(viewLifecycleOwner, priceDataObserver)
         viewModel.secName.observe(viewLifecycleOwner, secNameObserver)
         viewModel.chartEdge.observe(viewLifecycleOwner, chartEdgesObserver)
-        viewModel.isFinished.observe(viewLifecycleOwner, isFinishedObserver)
+        viewModel.isGameRunning.observe(viewLifecycleOwner, isGameRunningObserver)
         viewModel.bank.observe(viewLifecycleOwner, bankObserver)
         viewModel.stocks.observe(viewLifecycleOwner, stocksObserver)
         viewModel.sum.observe(viewLifecycleOwner, sumObserver)

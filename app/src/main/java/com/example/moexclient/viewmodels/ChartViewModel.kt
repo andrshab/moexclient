@@ -23,7 +23,7 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository)
     var prices: List<Price> = listOf()
     var currentEntryIndex: Int = 0
     val chartEdge: MutableLiveData<Edges> = MutableLiveData()
-    val isFinished: MutableLiveData<Boolean> = MutableLiveData()
+    val isGameRunning: MutableLiveData<Boolean> = MutableLiveData()
     val bank: MutableLiveData<Float> = MutableLiveData()
     val stocks: MutableLiveData<Float> = MutableLiveData()
     val sum: MutableLiveData<Float> = MutableLiveData()
@@ -48,6 +48,7 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository)
                 bank.value = game.bank
                 stocks.value = game.stocks
 
+
                 chartEdge.value = Edges(
                     prices.reduce(Price.Compare::minDate).date.time.toFloat(),
                     prices.reduce(Price.Compare::maxDate).date.time.toFloat(),
@@ -58,6 +59,7 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository)
                 secName.value = randomSecsItem.name
 
                 showNextPrice()
+                isGameRunning.value = true
             } else {
                 secName.value = "No data for ${randomSecsItem.name}"
                 priceData.value = LineData()
@@ -65,6 +67,12 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository)
 
         }
 
+    }
+    fun buyAll() {
+        buy((game.bank/game.stocksPrice).toInt() * 2)
+    }
+    fun sellAll() {
+        sell(game.stocksNumber * 2)
     }
     fun buy(number: Int)  {
         game.buy(number)
@@ -103,7 +111,7 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository)
             currentEntryIndex += 1
             return true
         } else {
-            isFinished.value = true
+            isGameRunning.value = false
             currentEntryIndex = 0
             return false
         }
