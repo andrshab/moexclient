@@ -64,7 +64,9 @@ class ChartFragment : Fragment() {
             }
         }
         val priceDataObserver = Observer<LineData> {
-            stocksTv.text = viewModel.currentPrice(it.getDataSetByLabel("primary", true) as LineDataSet).toString()
+            stocksTv.text = viewModel.currentPrice(
+                it.getDataSetByLabel("primary", true) as LineDataSet
+            ).toString()
             chart.data = it
             chart.invalidate()
             viewModel.animate(toggleButton.isChecked)
