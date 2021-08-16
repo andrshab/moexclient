@@ -2,6 +2,7 @@ package com.example.moexclient.viewmodels
 
 import android.graphics.Color
 import androidx.lifecycle.*
+import com.example.moexclient.Game
 import com.example.moexclient.api.Exceptions
 import com.example.moexclient.data.MoexRepository
 import com.example.moexclient.data.Price
@@ -23,6 +24,10 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository)
     var currentEntryIndex: Int = 0
     val chartEdge: MutableLiveData<Edges> = MutableLiveData()
     val isFinished: MutableLiveData<Boolean> = MutableLiveData()
+    val bank: MutableLiveData<Float> = MutableLiveData()
+    val stocks: MutableLiveData<Float> = MutableLiveData()
+    val sum: MutableLiveData<Float> = MutableLiveData()
+    val game = Game()
 
     fun updateChart() {
         viewModelScope.launch(Exceptions.handler) {
@@ -38,6 +43,10 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository)
                 val randDate = randDateString(startDate, endDate)
                 secData = repository.getSecOnBoardData(secId, boardId = boardId, from = randDate)
                 prices = secData.prices
+                currentEntryIndex = prices.size/4
+                game.reset(prices.subList(0, currentEntryIndex))
+                bank.value = game.bank
+                stocks.value = game.stocks
 
                 chartEdge.value = Edges(
                     prices.reduce(Price.Compare::minDate).date.time.toFloat(),
@@ -57,10 +66,23 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository)
         }
 
     }
+    fun buy(number: Int)  {
+        game.buy(number)
+        sum.value = game.stocks + game.bank
+        bank.value = game.bank
+        stocks.value = game.stocks
+    }
+
+    fun sell(number: Int) {
+        game.sell(number)
+        sum.value = game.stocks + game.bank
+        bank.value = game.bank
+        stocks.value = game.stocks
+    }
 
     fun animate(isTrue: Boolean) {
         viewModelScope.launch(Dispatchers.Main) {
-            delay(100)
+            delay((Game.CONSTANTS.durationMillis/prices.size).toLong())
             if(isTrue){
                 showNextPrice()
             }
@@ -77,6 +99,7 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository)
         val lineData = LineData(dataSet)
         if(currentEntryIndex < prices.size) {
             priceData.value = lineData
+            game.stocksPrice = prices[currentEntryIndex].value
             currentEntryIndex += 1
             return true
         } else {

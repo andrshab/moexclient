@@ -33,8 +33,8 @@
         android:id="@+id/next_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="36dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
         android:text="@string/next_button_label"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/chart" />
@@ -43,23 +43,126 @@
         android:id="@+id/stocks_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="36dp"
-        android:layout_marginTop="80dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/chart"
+        android:layout_marginStart="60dp"
+        app:layout_constraintStart_toEndOf="@+id/stocks_label_tv"
+        app:layout_constraintTop_toTopOf="@+id/stocks_label_tv"
         tools:text="6784" />
 
     <ToggleButton
         android:id="@+id/toggle_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="36dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
         android:background="@drawable/toggle_button"
-        android:textOn="Pause"
-        android:textOff="Run"
         android:text="ToggleButton"
+        android:textOff="Run"
+        android:textOn="Pause"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/chart" />
+
+    <Button
+        android:id="@+id/buy_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="28dp"
+        android:text="Buy"
+        app:layout_constraintEnd_toStartOf="@+id/sell_button"
+        app:layout_constraintTop_toTopOf="@+id/sell_button" />
+
+    <Button
+        android:id="@+id/sell_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="36dp"
+        android:text="Sell"
+        app:layout_constraintBottom_toBottomOf="@+id/number_picker"
+        app:layout_constraintEnd_toStartOf="@+id/number_picker"
+        app:layout_constraintTop_toTopOf="@+id/number_picker"
+        app:layout_constraintVertical_bias="0.507" />
+
+    <TextView
+        android:id="@+id/stocks_label_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="STOCKS"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/chart" />
+
+    <TextView
+        android:id="@+id/bank_label_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="BANK"
+        app:layout_constraintStart_toStartOf="@+id/stocks_label_tv"
+        app:layout_constraintTop_toBottomOf="@+id/stocks_label_tv" />
+
+    <TextView
+        android:id="@+id/sum_label_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="SUM"
+        android:textSize="26sp"
+        app:layout_constraintStart_toStartOf="@+id/startsum_label_tv"
+        app:layout_constraintTop_toBottomOf="@+id/startsum_label_tv" />
+
+    <TextView
+        android:id="@+id/bank_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="@+id/stocks_tv"
+        app:layout_constraintTop_toBottomOf="@+id/stocks_tv"
+        tools:text="89043" />
+
+    <NumberPicker
+        android:id="@+id/number_picker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/sum_tv" />
+
+    <TextView
+        android:id="@+id/stocks_hint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        app:layout_constraintEnd_toEndOf="@+id/sell_button"
+        app:layout_constraintHorizontal_bias="0.493"
+        app:layout_constraintStart_toStartOf="@+id/buy_button"
+        app:layout_constraintTop_toBottomOf="@+id/buy_button"
+        tools:text="596886" />
+
+    <TextView
+        android:id="@+id/sum_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="26sp"
+        app:layout_constraintStart_toStartOf="@+id/startsum_tv"
+        app:layout_constraintTop_toTopOf="@+id/sum_label_tv"
+        tools:text="56756" />
+
+    <TextView
+        android:id="@+id/startsum_label_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="START SUM"
+        app:layout_constraintStart_toStartOf="@+id/bank_label_tv"
+        app:layout_constraintTop_toBottomOf="@+id/bank_label_tv" />
+
+    <TextView
+        android:id="@+id/startsum_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        tools:text="353453"
+        app:layout_constraintStart_toStartOf="@+id/bank_tv"
+        app:layout_constraintTop_toBottomOf="@+id/bank_tv" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
