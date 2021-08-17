@@ -9,6 +9,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.ToggleButton
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment
@@ -18,6 +19,7 @@ import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.XAxis
 import javax.inject.Inject
 import com.github.mikephil.charting.data.LineData
+import kotlin.math.abs
 import kotlin.math.floor
 
 
@@ -33,7 +35,7 @@ class ChartFragment : Fragment() {
     private lateinit var sellButton: Button
     private lateinit var sumTv: TextView
     private lateinit var startSumTv: TextView
-    private lateinit var moneyLocationTv: TextView
+    private lateinit var profitTv: TextView
     private lateinit var progressBar: ProgressBar
 
     override fun onCreateView(
@@ -61,7 +63,7 @@ class ChartFragment : Fragment() {
         toggleButton = root.findViewById(R.id.toggle_button)
         sumTv = root.findViewById(R.id.sum_tv)
         startSumTv = root.findViewById(R.id.startsum_tv)
-        moneyLocationTv = root.findViewById(R.id.money_location_tv)
+        profitTv = root.findViewById(R.id.profit_tv)
         progressBar = root.findViewById(R.id.progress_bar)
 
         nextButton.setOnClickListener {
@@ -111,7 +113,6 @@ class ChartFragment : Fragment() {
         }
         val sumObserver = Observer<Float> { setSumTv(it) }
         val startSumObserver = Observer<Float> { startSumTv.text = it.toString() }
-        val moneyLocObserver = Observer<String> { moneyLocationTv.text = it }
         val buyBtnObserver = Observer<Int> { buyButton.visibility = it }
         val sellBtnObserver = Observer<Int> { sellButton.visibility = it }
         val toggleButtonObserver = Observer<ToggleState> {
@@ -126,6 +127,7 @@ class ChartFragment : Fragment() {
                 progressBar.visibility = View.INVISIBLE
             }
         }
+        val profitObserver = Observer<Float> { setProfitTv(it) }
 
         viewModel.priceData.observe(viewLifecycleOwner, priceDataObserver)
         viewModel.secName.observe(viewLifecycleOwner, secNameObserver)
@@ -133,11 +135,11 @@ class ChartFragment : Fragment() {
         viewModel.isGameRunning.observe(viewLifecycleOwner, isGameRunningObserver)
         viewModel.sum.observe(viewLifecycleOwner, sumObserver)
         viewModel.startSum.observe(viewLifecycleOwner, startSumObserver)
-        viewModel.moneyLoc.observe(viewLifecycleOwner, moneyLocObserver)
         viewModel.buyBtn.observe(viewLifecycleOwner, buyBtnObserver)
         viewModel.sellBtn.observe(viewLifecycleOwner, sellBtnObserver)
         viewModel.toggleBtn.observe(viewLifecycleOwner, toggleButtonObserver)
         viewModel.isLoading.observe(viewLifecycleOwner, isLoadingObserver)
+        viewModel.profit.observe(viewLifecycleOwner, profitObserver)
         if(viewModel.prices.isEmpty()) {
             resetUi()
             viewModel.updateChart()
@@ -190,11 +192,22 @@ class ChartFragment : Fragment() {
     private fun setSumTv(sum: Float) {
         sumTv.text = sum.toString()
         if(sum >= viewModel.game.startSum) {
-            sumTv.setBackgroundColor(Color.GREEN)
+            sumTv.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.holo_green_light))
         } else {
-            sumTv.setBackgroundColor(Color.RED)
+            sumTv.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.holo_red_light))
         }
     }
+
+    private fun setProfitTv(profit: Float) {
+        if(profit >= 0) {
+            profitTv.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.holo_green_light))
+            profitTv.text = "+${abs(profit)}%"
+        } else {
+            profitTv.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.holo_red_light))
+            profitTv.text = "-${abs(profit)}%"
+        }
+    }
+
     private fun buttonsIsEnabled(isEnabled: Boolean) {
         buyButton.isEnabled = isEnabled
         sellButton.isEnabled = isEnabled

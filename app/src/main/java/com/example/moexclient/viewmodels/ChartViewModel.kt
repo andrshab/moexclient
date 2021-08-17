@@ -33,6 +33,7 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository,
     val sellBtn: MutableLiveData<Int> = MutableLiveData()
     val toggleBtn: MutableLiveData<ToggleState> = MutableLiveData()
     val isLoading: MutableLiveData<Boolean> = MutableLiveData()
+    val profit: MutableLiveData<Float> = MutableLiveData()
     val game = Game()
 
     fun updateChart() {
@@ -115,6 +116,7 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository,
             game.stocksPrice = currentPrice(dataSet)//prices[currentEntryIndex].value
             game.stocks = game.stocksNumber * game.stocksPrice
             sum.value = (game.stocks + game.bank).roundToFirst()
+            profit.value = (((game.stocks + game.bank)/game.startSum - 1)*100).roundToFirst()
             priceData.value = lineData
             currentEntryIndex += 1
             return true

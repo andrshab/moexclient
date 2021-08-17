@@ -38,17 +38,18 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/toggle_button" />
 
+
     <ToggleButton
         android:id="@+id/toggle_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="28dp"
         android:background="@drawable/toggle_button"
         android:text="ToggleButton"
         android:textOff="Run"
         android:textOn="Pause"
-        app:layout_constraintStart_toStartOf="@+id/sum_label_tv"
+        app:layout_constraintStart_toEndOf="@+id/chart"
         app:layout_constraintTop_toBottomOf="@+id/sec_name_tv" />
-
 
     <Button
         android:id="@+id/buy_button"
@@ -72,9 +73,8 @@
         android:id="@+id/sum_label_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="8dp"
         android:text="SUM"
-        android:textSize="26sp"
         app:layout_constraintStart_toStartOf="@+id/startsum_label_tv"
         app:layout_constraintTop_toBottomOf="@+id/startsum_label_tv" />
 
@@ -82,7 +82,6 @@
         android:id="@+id/sum_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="26sp"
         app:layout_constraintStart_toStartOf="@+id/startsum_tv"
         app:layout_constraintTop_toTopOf="@+id/sum_label_tv"
         tools:text="56756" />
@@ -91,38 +90,20 @@
         android:id="@+id/startsum_label_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="68dp"
         android:text="START SUM"
-        app:layout_constraintStart_toStartOf="@+id/money_location_label_tv"
-        app:layout_constraintTop_toBottomOf="@+id/money_location_label_tv" />
+        app:layout_constraintStart_toEndOf="@+id/chart"
+        app:layout_constraintTop_toTopOf="@+id/chart" />
 
     <TextView
         android:id="@+id/startsum_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        app:layout_constraintStart_toStartOf="@+id/money_location_tv"
-        app:layout_constraintTop_toBottomOf="@+id/money_location_tv"
+        android:layout_marginStart="12dp"
+        app:layout_constraintStart_toEndOf="@+id/startsum_label_tv"
+        app:layout_constraintTop_toTopOf="@+id/startsum_label_tv"
         tools:text="353453" />
-
-    <TextView
-        android:id="@+id/money_location_label_tv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="464dp"
-        android:layout_marginTop="92dp"
-        android:text="MONEY IN"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/chart" />
-
-    <TextView
-        android:id="@+id/money_location_tv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        app:layout_constraintStart_toEndOf="@+id/money_location_label_tv"
-        app:layout_constraintTop_toTopOf="@+id/money_location_label_tv"
-        tools:text="BANK" />
 
     <ProgressBar
         android:id="@+id/progress_bar"
@@ -134,5 +115,19 @@
         app:layout_constraintEnd_toEndOf="@+id/chart"
         app:layout_constraintStart_toStartOf="@+id/chart"
         app:layout_constraintTop_toTopOf="@+id/chart" />
+
+    <TextView
+        android:id="@+id/profit_tv"
+        android:layout_width="250dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="28dp"
+        android:autoSizeMaxTextSize="60sp"
+        android:autoSizeMinTextSize="12sp"
+        android:autoSizeTextType="uniform"
+        android:textSize="60sp"
+        app:layout_constraintBottom_toBottomOf="@+id/chart"
+        app:layout_constraintStart_toEndOf="@+id/chart"
+        tools:text="+30.0%"
+        tools:textColor="@android:color/holo_green_light" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
