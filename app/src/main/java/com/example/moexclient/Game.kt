@@ -49,6 +49,8 @@ class Game {
         else -> log10(abs(toDouble())).toInt() + 1
     }
     object CONSTANTS {
-        const val durationMillis = 20000
+        const val FAST: Long = 5000
+        const val NORMAL: Long = 20000
+        const val SLOW: Long = 60000
     }
 }

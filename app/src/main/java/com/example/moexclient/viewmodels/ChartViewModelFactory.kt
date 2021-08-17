@@ -1,14 +1,15 @@
 package com.example.moexclient.viewmodels
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.moexclient.data.MoexRepository
 import javax.inject.Inject
 
-class ChartViewModelFactory @Inject constructor(private val repository: MoexRepository): ViewModelProvider.Factory {
+class ChartViewModelFactory @Inject constructor(private val repository: MoexRepository, private val context: Context): ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ChartViewModel::class.java)) {
-            return ChartViewModel(repository) as T
+            return ChartViewModel(repository, context) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

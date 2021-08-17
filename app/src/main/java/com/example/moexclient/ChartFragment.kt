@@ -8,14 +8,17 @@ import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.ToggleButton
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.NavHostFragment
 import com.example.moexclient.viewmodels.*
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.XAxis
 import javax.inject.Inject
 import com.github.mikephil.charting.data.LineData
+import kotlin.math.floor
 
 
 class ChartFragment : Fragment() {
@@ -139,10 +142,30 @@ class ChartFragment : Fragment() {
             resetUi()
             viewModel.updateChart()
         }
+        setHasOptionsMenu(true)
         return root
     }
 
-    fun limitLine(y: Float, dashed: Boolean): LimitLine {
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId) {
+            R.id.menu_news -> {
+                val direction = ChartFragmentDirections.actionChartFragmentToNewsListFragment()
+                NavHostFragment.findNavController(this).navigate(direction)
+            }
+            R.id.menu_settings -> {
+                val direction = ChartFragmentDirections.actionChartFragmentToSettingsFragment()
+                NavHostFragment.findNavController(this).navigate(direction)
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun limitLine(y: Float, dashed: Boolean): LimitLine {
         val ll = LimitLine(y)
         ll.lineWidth = 2f
         ll.lineColor = Color.BLACK

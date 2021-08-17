@@ -1,16 +1,16 @@
 package com.example.moexclient.di
 
-import com.example.moexclient.ChartFragment
-import com.example.moexclient.MainActivity
-import com.example.moexclient.NewsFragment
-import com.example.moexclient.NewsListFragment
+import android.app.Application
+import android.content.Context
+import com.example.moexclient.*
 import dagger.Component
 import javax.inject.Singleton
 
-@Component(modules = [NetworkModule::class])
+@Component(modules = [NetworkModule::class, AppModule::class])
 @Singleton
 interface ApplicationComponent {
     fun inject(fragment: NewsListFragment)
     fun inject(fragment: NewsFragment)
     fun inject(fragment: ChartFragment)
+    fun context(): Context
 }

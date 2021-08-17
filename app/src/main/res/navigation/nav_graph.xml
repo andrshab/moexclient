@@ -8,8 +8,8 @@
     <fragment
         android:id="@+id/newsListFragment"
         android:name="com.example.moexclient.NewsListFragment"
-        android:label="fragment_news_list"
-        tools:layout="@layout/fragment_news_list" >
+        android:label="News List"
+        tools:layout="@layout/fragment_news_list">
         <action
             android:id="@+id/action_newsListFragment_to_newsFragment"
             app:destination="@id/newsFragment"
@@ -21,8 +21,8 @@
     <fragment
         android:id="@+id/newsFragment"
         android:name="com.example.moexclient.NewsFragment"
-        android:label="fragment_news"
-        tools:layout="@layout/fragment_news" >
+        android:label="News"
+        tools:layout="@layout/fragment_news">
         <argument
             android:name="newsId"
             app:argType="integer" />
@@ -30,6 +30,17 @@
     <fragment
         android:id="@+id/chartFragment"
         android:name="com.example.moexclient.ChartFragment"
-        android:label="fragment_chart"
-        tools:layout="@layout/fragment_chart" />
+        android:label="Trading"
+        tools:layout="@layout/fragment_chart">
+        <action
+            android:id="@+id/action_chartFragment_to_newsListFragment"
+            app:destination="@id/newsListFragment" />
+        <action
+            android:id="@+id/action_chartFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.example.moexclient.SettingsFragment"
+        android:label="SettingsFragment" />
 </navigation>

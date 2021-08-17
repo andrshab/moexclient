@@ -1,5 +1,6 @@
 package com.example.moexclient.viewmodels
 
+import android.content.Context
 import android.graphics.Color
 import androidx.lifecycle.*
 import com.example.moexclient.Game
@@ -18,7 +19,7 @@ import javax.inject.Inject
 import kotlin.math.round
 
 
-class ChartViewModel @Inject constructor(private val repository: MoexRepository) : ViewModel() {
+class ChartViewModel @Inject constructor(private val repository: MoexRepository, private val context: Context) : ViewModel() {
     val priceData: MutableLiveData<LineData> = MutableLiveData()
     val secName: MutableLiveData<String> = MutableLiveData()
     var prices: List<Price> = listOf()
@@ -92,7 +93,10 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository)
 
     fun animate(isTrue: Boolean) {
         viewModelScope.launch(Dispatchers.Main) {
-            delay((Game.CONSTANTS.durationMillis/prices.size).toLong())
+            val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
+            val time = settingToTime(prefs.getString("time", "normal")?:"normal")
+            val durationMillis = time / prices.size
+            delay(durationMillis)
             if(isTrue && isGameRunning.value == true){
                 showNextPrice()
             }
@@ -152,6 +156,13 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository)
     private fun Float.roundToFirst(): Float {
         return round( this * 10.0f) / 10
     }
+    private fun settingToTime(setting: String): Long =
+        when(setting) {
+            "slow" -> Game.CONSTANTS.SLOW
+            "normal" -> Game.CONSTANTS.NORMAL
+            "fast" -> Game.CONSTANTS.FAST
+            else -> Game.CONSTANTS.NORMAL
+        }
 
 }
 
