@@ -143,7 +143,7 @@ class ChartFragment : Fragment() {
         toggleButton.visibility = View.GONE
     }
 
-    fun setSumTv(sum: Float) {
+    private fun setSumTv(sum: Float) {
         sumTv.text = sum.toString()
         if(sum >= viewModel.game.startSum) {
             sumTv.setBackgroundColor(Color.GREEN)
