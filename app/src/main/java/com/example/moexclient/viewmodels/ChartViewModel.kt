@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+import kotlin.math.round
 
 
 class ChartViewModel @Inject constructor(private val repository: MoexRepository) : ViewModel() {
@@ -24,9 +25,8 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository)
     var currentEntryIndex: Int = 0
     val chartEdge: MutableLiveData<Edges> = MutableLiveData()
     val isGameRunning: MutableLiveData<Boolean> = MutableLiveData()
-    val bank: MutableLiveData<Float> = MutableLiveData()
-    val stocks: MutableLiveData<Float> = MutableLiveData()
     val sum: MutableLiveData<Float> = MutableLiveData()
+    val startSum: MutableLiveData<Float> = MutableLiveData()
     val game = Game()
 
     fun updateChart() {
@@ -45,8 +45,7 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository)
                 prices = secData.prices
                 currentEntryIndex = prices.size/4
                 game.reset(prices.subList(0, currentEntryIndex))
-                bank.value = game.bank
-                stocks.value = game.stocks
+                startSum.value = game.startSum
 
 
                 chartEdge.value = Edges(
@@ -76,16 +75,12 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository)
     }
     fun buy(number: Int)  {
         game.buy(number)
-        sum.value = game.stocks + game.bank
-        bank.value = game.bank
-        stocks.value = game.stocks
+        sum.value = (game.stocks + game.bank).roundToFirst()
     }
 
     fun sell(number: Int) {
         game.sell(number)
-        sum.value = game.stocks + game.bank
-        bank.value = game.bank
-        stocks.value = game.stocks
+        sum.value = (game.stocks + game.bank).roundToFirst()
     }
 
     fun animate(isTrue: Boolean) {
@@ -106,8 +101,10 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository)
         val dataSet = dataSet(prices.subList(0, currentEntryIndex), Color.BLUE, true, "primary")
         val lineData = LineData(dataSet)
         if(currentEntryIndex < prices.size) {
+            game.stocksPrice = currentPrice(dataSet)//prices[currentEntryIndex].value
+            game.stocks = game.stocksNumber * game.stocksPrice
+            sum.value = (game.stocks + game.bank).roundToFirst()
             priceData.value = lineData
-            game.stocksPrice = prices[currentEntryIndex].value
             currentEntryIndex += 1
             return true
         } else {
@@ -143,6 +140,10 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository)
         }
 
         return SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).format(Date(rand))
+    }
+
+    private fun Float.roundToFirst(): Float {
+        return round( this * 10.0f) / 10
     }
 
 }

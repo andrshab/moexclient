@@ -20,6 +20,7 @@ import javax.inject.Inject
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import kotlin.math.floor
+import kotlin.math.round
 
 
 class ChartFragment : Fragment() {
@@ -29,13 +30,12 @@ class ChartFragment : Fragment() {
     private lateinit var nextButton: Button
     private lateinit var chart: LineChart
     private lateinit var secNameTv: TextView
-    private lateinit var stocksTv: TextView
     private lateinit var toggleButton: ToggleButton
     private lateinit var buyButton: Button
     private lateinit var sellButton: Button
-    private lateinit var bankTv: TextView
     private lateinit var sumTv: TextView
     private lateinit var startSumTv: TextView
+    private lateinit var moneyLocationTv: TextView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -59,11 +59,10 @@ class ChartFragment : Fragment() {
         nextButton = root.findViewById(R.id.next_button)
         buyButton = root.findViewById(R.id.buy_button)
         sellButton = root.findViewById(R.id.sell_button)
-        stocksTv = root.findViewById(R.id.stocks_tv)
         toggleButton = root.findViewById(R.id.toggle_button)
-        bankTv = root.findViewById(R.id.bank_tv)
         sumTv = root.findViewById(R.id.sum_tv)
         startSumTv = root.findViewById(R.id.startsum_tv)
+        moneyLocationTv = root.findViewById(R.id.money_location_tv)
         resetUi()
 
         nextButton.setOnClickListener {
@@ -77,26 +76,17 @@ class ChartFragment : Fragment() {
         }
         buyButton.setOnClickListener {
             viewModel.buyAll()
+            moneyLocationTv.text = "STOCKS"
+            buyButton.visibility = View.GONE
+            sellButton.visibility = View.VISIBLE
         }
         sellButton.setOnClickListener {
             viewModel.sellAll()
+            moneyLocationTv.text = "BANK"
+            sellButton.visibility = View.GONE
+            buyButton.visibility = View.VISIBLE
         }
         val priceDataObserver = Observer<LineData> {
-            val curPrice = viewModel.currentPrice(
-                it.getDataSetByLabel("primary", true) as LineDataSet
-            )
-            val curStocksNumber = viewModel.game.stocksNumber
-            val sum = curPrice * curStocksNumber + viewModel.game.bank
-
-            bankTv.text = "${viewModel.game.bank}: ${floor(viewModel.game.bank/sum*100)}%"
-            stocksTv.text = "${curPrice * curStocksNumber}: ${floor(curPrice * curStocksNumber/sum*100)}%"
-            startSumTv.text = viewModel.game.startSum.toString()
-            sumTv.text = sum.toString()
-            if(sum >= viewModel.game.startSum) {
-                sumTv.setBackgroundColor(Color.GREEN)
-            } else {
-                sumTv.setBackgroundColor(Color.RED)
-            }
             chart.data = it
             chart.invalidate()
             viewModel.animate(toggleButton.isChecked)
@@ -107,53 +97,59 @@ class ChartFragment : Fragment() {
             chart.xAxis.axisMaximum = it.xMax
         }
         val isGameRunningObserver = Observer<Boolean> {
-            val y = (chart.data.getDataSetByLabel("primary", true) as LineDataSet).values.last().y
-            val ll = LimitLine(y)
-            ll.lineWidth = 2f
-            ll.lineColor = Color.BLACK
+            val curPrice = viewModel.game.stocksPrice
             if(it) {
-                ll.enableDashedLine(10f, 10f, 0f)
                 chart.axisLeft.removeAllLimitLines()
+                chart.axisLeft.addLimitLine(limitLine(curPrice, true))
             } else {
+                chart.axisLeft.addLimitLine(limitLine(curPrice, false))
                 setupNextUi()
             }
-
-            chart.axisLeft.addLimitLine(ll)
             chart.invalidate()
         }
-        val bankObserver = Observer<Float> { bankTv.text = "${it}: ${floor(it/(viewModel.game.stocks + it)*100)}%"}
-        val stocksObserver = Observer<Float> { stocksTv.text = "${it}: ${floor(it/(it + viewModel.game.bank)*100)}%" }
-        val sumObserver = Observer<Float> {
-            startSumTv.text = viewModel.game.startSum.toString()
-            sumTv.text = it.toString()
-            if(it >= viewModel.game.startSum) {
-                sumTv.setBackgroundColor(Color.GREEN)
-            } else {
-                sumTv.setBackgroundColor(Color.RED)
-            }
-        }
+        val sumObserver = Observer<Float> { setSumTv(it) }
+        val startSumObserver = Observer<Float> { startSumTv.text = it.toString() }
 
         viewModel.priceData.observe(viewLifecycleOwner, priceDataObserver)
         viewModel.secName.observe(viewLifecycleOwner, secNameObserver)
         viewModel.chartEdge.observe(viewLifecycleOwner, chartEdgesObserver)
         viewModel.isGameRunning.observe(viewLifecycleOwner, isGameRunningObserver)
-        viewModel.bank.observe(viewLifecycleOwner, bankObserver)
-        viewModel.stocks.observe(viewLifecycleOwner, stocksObserver)
         viewModel.sum.observe(viewLifecycleOwner, sumObserver)
+        viewModel.startSum.observe(viewLifecycleOwner, startSumObserver)
         if(chart.isEmpty) {
             viewModel.updateChart()
         }
         return root
     }
 
+    fun limitLine(y: Float, dashed: Boolean): LimitLine {
+        val ll = LimitLine(y)
+        ll.lineWidth = 2f
+        ll.lineColor = Color.BLACK
+        if(dashed) ll.enableDashedLine(10f, 10f, 0f)
+        return ll
+    }
+
     private fun resetUi() {
         nextButton.visibility = View.GONE
         toggleButton.visibility = View.VISIBLE
         toggleButton.isChecked = false
+        moneyLocationTv.text = "BANK"
+        buyButton.visibility = View.VISIBLE
+        sellButton.visibility = View.GONE
     }
     private fun setupNextUi() {
         nextButton.visibility = View.VISIBLE
         toggleButton.visibility = View.GONE
+    }
+
+    fun setSumTv(sum: Float) {
+        sumTv.text = sum.toString()
+        if(sum >= viewModel.game.startSum) {
+            sumTv.setBackgroundColor(Color.GREEN)
+        } else {
+            sumTv.setBackgroundColor(Color.RED)
+        }
     }
 
 }
