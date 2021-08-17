@@ -5,22 +5,17 @@ import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
 import android.widget.Button
-import android.widget.NumberPicker
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.ToggleButton
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.example.moexclient.viewmodels.ChartViewModel
-import com.example.moexclient.viewmodels.ChartViewModelFactory
-import com.example.moexclient.viewmodels.Edges
+import com.example.moexclient.viewmodels.*
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.XAxis
 import javax.inject.Inject
 import com.github.mikephil.charting.data.LineData
-import com.github.mikephil.charting.data.LineDataSet
-import kotlin.math.floor
-import kotlin.math.round
 
 
 class ChartFragment : Fragment() {
@@ -36,6 +31,7 @@ class ChartFragment : Fragment() {
     private lateinit var sumTv: TextView
     private lateinit var startSumTv: TextView
     private lateinit var moneyLocationTv: TextView
+    private lateinit var progressBar: ProgressBar
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -63,28 +59,31 @@ class ChartFragment : Fragment() {
         sumTv = root.findViewById(R.id.sum_tv)
         startSumTv = root.findViewById(R.id.startsum_tv)
         moneyLocationTv = root.findViewById(R.id.money_location_tv)
-        resetUi()
+        progressBar = root.findViewById(R.id.progress_bar)
 
         nextButton.setOnClickListener {
             resetUi()
             viewModel.updateChart()
         }
-        toggleButton.setOnCheckedChangeListener { _, isChecked ->
+        toggleButton.setOnCheckedChangeListener { button, isChecked ->
+            viewModel.toggleBtn.value = ToggleState(button.visibility, isChecked)
             if(isChecked){
                 viewModel.showNextPrice()
             }
         }
         buyButton.setOnClickListener {
             viewModel.buyAll()
-            moneyLocationTv.text = "STOCKS"
-            buyButton.visibility = View.GONE
-            sellButton.visibility = View.VISIBLE
+            viewModel.moneyLoc.value = "STOCKS"
+            viewModel.buyBtn.value = View.GONE
+            viewModel.sellBtn.value = View.VISIBLE
+            chart.axisLeft.removeAllLimitLines()
+            chart.axisLeft.addLimitLine(limitLine(viewModel.game.stocksPrice, true))
         }
         sellButton.setOnClickListener {
             viewModel.sellAll()
-            moneyLocationTv.text = "BANK"
-            sellButton.visibility = View.GONE
-            buyButton.visibility = View.VISIBLE
+            viewModel.moneyLoc.value = "BANK"
+            viewModel.sellBtn.value = View.GONE
+            viewModel.buyBtn.value = View.VISIBLE
         }
         val priceDataObserver = Observer<LineData> {
             chart.data = it
@@ -109,6 +108,21 @@ class ChartFragment : Fragment() {
         }
         val sumObserver = Observer<Float> { setSumTv(it) }
         val startSumObserver = Observer<Float> { startSumTv.text = it.toString() }
+        val moneyLocObserver = Observer<String> { moneyLocationTv.text = it }
+        val buyBtnObserver = Observer<Int> { buyButton.visibility = it }
+        val sellBtnObserver = Observer<Int> { sellButton.visibility = it }
+        val toggleButtonObserver = Observer<ToggleState> {
+            toggleButton.visibility = it.vis
+            toggleButton.isChecked = it.isChecked
+        }
+        val isLoadingObserver = Observer<Boolean> {
+            buttonsIsEnabled(!it)
+            if(it) {
+                progressBar.visibility = View.VISIBLE
+            } else {
+                progressBar.visibility = View.INVISIBLE
+            }
+        }
 
         viewModel.priceData.observe(viewLifecycleOwner, priceDataObserver)
         viewModel.secName.observe(viewLifecycleOwner, secNameObserver)
@@ -116,7 +130,13 @@ class ChartFragment : Fragment() {
         viewModel.isGameRunning.observe(viewLifecycleOwner, isGameRunningObserver)
         viewModel.sum.observe(viewLifecycleOwner, sumObserver)
         viewModel.startSum.observe(viewLifecycleOwner, startSumObserver)
-        if(chart.isEmpty) {
+        viewModel.moneyLoc.observe(viewLifecycleOwner, moneyLocObserver)
+        viewModel.buyBtn.observe(viewLifecycleOwner, buyBtnObserver)
+        viewModel.sellBtn.observe(viewLifecycleOwner, sellBtnObserver)
+        viewModel.toggleBtn.observe(viewLifecycleOwner, toggleButtonObserver)
+        viewModel.isLoading.observe(viewLifecycleOwner, isLoadingObserver)
+        if(viewModel.prices.isEmpty()) {
+            resetUi()
             viewModel.updateChart()
         }
         return root
@@ -132,15 +152,16 @@ class ChartFragment : Fragment() {
 
     private fun resetUi() {
         nextButton.visibility = View.GONE
-        toggleButton.visibility = View.VISIBLE
-        toggleButton.isChecked = false
-        moneyLocationTv.text = "BANK"
-        buyButton.visibility = View.VISIBLE
-        sellButton.visibility = View.GONE
+        viewModel.toggleBtn.value = ToggleState(View.VISIBLE, false)
+        viewModel.moneyLoc.value = "BANK"
+        viewModel.buyBtn.value = View.VISIBLE
+        viewModel.sellBtn.value = View.GONE
     }
     private fun setupNextUi() {
+        viewModel.buyBtn.value = View.GONE
+        viewModel.sellBtn.value = View.GONE
         nextButton.visibility = View.VISIBLE
-        toggleButton.visibility = View.GONE
+        viewModel.toggleBtn.value = ToggleState(View.GONE, false)
     }
 
     private fun setSumTv(sum: Float) {
@@ -151,5 +172,12 @@ class ChartFragment : Fragment() {
             sumTv.setBackgroundColor(Color.RED)
         }
     }
+    private fun buttonsIsEnabled(isEnabled: Boolean) {
+        buyButton.isEnabled = isEnabled
+        sellButton.isEnabled = isEnabled
+        toggleButton.isEnabled = isEnabled
+        nextButton.isEnabled = isEnabled
+    }
+
 
 }

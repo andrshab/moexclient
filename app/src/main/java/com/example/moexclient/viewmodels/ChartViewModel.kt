@@ -22,15 +22,21 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository)
     val priceData: MutableLiveData<LineData> = MutableLiveData()
     val secName: MutableLiveData<String> = MutableLiveData()
     var prices: List<Price> = listOf()
-    var currentEntryIndex: Int = 0
+    private var currentEntryIndex: Int = 0
     val chartEdge: MutableLiveData<Edges> = MutableLiveData()
     val isGameRunning: MutableLiveData<Boolean> = MutableLiveData()
     val sum: MutableLiveData<Float> = MutableLiveData()
     val startSum: MutableLiveData<Float> = MutableLiveData()
+    val moneyLoc: MutableLiveData<String> = MutableLiveData()
+    val buyBtn: MutableLiveData<Int> = MutableLiveData()
+    val sellBtn: MutableLiveData<Int> = MutableLiveData()
+    val toggleBtn: MutableLiveData<ToggleState> = MutableLiveData()
+    val isLoading: MutableLiveData<Boolean> = MutableLiveData()
     val game = Game()
 
     fun updateChart() {
         viewModelScope.launch(Exceptions.handler) {
+            isLoading.value = true
             val topSecsData = repository.getTopSecsData()
             val randomSecsItem = topSecsData.secIdList.random()
             val boardId = randomSecsItem.boardId
@@ -42,6 +48,7 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository)
                 val endDate = secData.prices[0].date
                 val randDate = randDateString(startDate, endDate)
                 secData = repository.getSecOnBoardData(secId, boardId = boardId, from = randDate)
+                isLoading.value = false
                 prices = secData.prices
                 currentEntryIndex = prices.size/4
                 game.reset(prices.subList(0, currentEntryIndex))
@@ -86,13 +93,13 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository)
     fun animate(isTrue: Boolean) {
         viewModelScope.launch(Dispatchers.Main) {
             delay((Game.CONSTANTS.durationMillis/prices.size).toLong())
-            if(isTrue){
+            if(isTrue && isGameRunning.value == true){
                 showNextPrice()
             }
         }
     }
 
-    fun currentPrice(dataSet: LineDataSet): Float{
+    private fun currentPrice(dataSet: LineDataSet): Float{
         val entries = dataSet.values
         return if(entries.isNotEmpty()) entries.last().y else 0f
     }
@@ -149,3 +156,4 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository)
 }
 
 data class Edges(val xMin: Float, val xMax: Float, val yMin: Float, val yMax: Float)
+data class ToggleState(val vis: Int, val isChecked: Boolean)
