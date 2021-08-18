@@ -1,5 +1,6 @@
 package com.example.moexclient.fragments
 
+import android.animation.Animator
 import android.graphics.Color
 import android.os.Bundle
 import android.view.*
@@ -9,6 +10,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment
+import com.airbnb.lottie.LottieAnimationView
 import com.example.moexclient.App
 import com.example.moexclient.R
 import com.example.moexclient.viewmodels.*
@@ -38,6 +40,7 @@ class ChartFragment : Fragment() {
     private lateinit var startSumTv: TextView
     private lateinit var profitTv: TextView
     private lateinit var progressBar: ProgressBar
+    private lateinit var moneyAnimation: LottieAnimationView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -66,6 +69,8 @@ class ChartFragment : Fragment() {
         startSumTv = root.findViewById(R.id.startsum_tv)
         profitTv = root.findViewById(R.id.profit_tv)
         progressBar = root.findViewById(R.id.progress_bar)
+        moneyAnimation = root.findViewById(R.id.money_confetti)
+        moneyAnimation.visibility = View.INVISIBLE
 
         nextButton.setOnClickListener {
             resetUi()
@@ -130,7 +135,10 @@ class ChartFragment : Fragment() {
         }
         val profitObserver = Observer<Float> { setProfitTv(it) }
         val isNewRecordObserver = Observer<Boolean> {
-            if(it) Toast.makeText(context, "NEW RECORD!", Toast.LENGTH_LONG).show()
+            if(it) {
+                moneyAnimation.visibility = View.VISIBLE
+                moneyAnimation.playAnimation()
+            }
         }
 
         viewModel.priceData.observe(viewLifecycleOwner, priceDataObserver)
