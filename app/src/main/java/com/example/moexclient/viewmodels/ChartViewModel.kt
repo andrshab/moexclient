@@ -3,7 +3,7 @@ package com.example.moexclient.viewmodels
 import android.content.SharedPreferences
 import android.graphics.Color
 import androidx.lifecycle.*
-import com.example.moexclient.Game
+import com.example.moexclient.game.Game
 import com.example.moexclient.api.Exceptions
 import com.example.moexclient.data.MoexRepository
 import com.example.moexclient.data.Price

@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/newsListFragment"
-        android:name="com.example.moexclient.NewsListFragment"
+        android:name="com.example.moexclient.fragments.NewsListFragment"
         android:label="News List"
         tools:layout="@layout/fragment_news_list">
         <action
@@ -20,7 +20,7 @@
     </fragment>
     <fragment
         android:id="@+id/newsFragment"
-        android:name="com.example.moexclient.NewsFragment"
+        android:name="com.example.moexclient.fragments.NewsFragment"
         android:label="News"
         tools:layout="@layout/fragment_news">
         <argument
@@ -29,7 +29,7 @@
     </fragment>
     <fragment
         android:id="@+id/chartFragment"
-        android:name="com.example.moexclient.ChartFragment"
+        android:name="com.example.moexclient.fragments.ChartFragment"
         android:label="Trading"
         tools:layout="@layout/fragment_chart">
         <action
@@ -41,6 +41,6 @@
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
-        android:name="com.example.moexclient.SettingsFragment"
+        android:name="com.example.moexclient.fragments.SettingsFragment"
         android:label="SettingsFragment" />
 </navigation>

@@ -1,9 +1,9 @@
 package com.example.moexclient.di
 
-import android.app.Application
-import android.content.Context
 import android.content.SharedPreferences
-import com.example.moexclient.*
+import com.example.moexclient.fragments.ChartFragment
+import com.example.moexclient.fragments.NewsFragment
+import com.example.moexclient.fragments.NewsListFragment
 import dagger.Component
 import javax.inject.Singleton
 

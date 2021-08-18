@@ -1,7 +1,8 @@
-package com.example.moexclient
+package com.example.moexclient.fragments
 
 import android.os.Bundle
 import androidx.preference.PreferenceFragmentCompat
+import com.example.moexclient.R
 
 class SettingsFragment : PreferenceFragmentCompat() {
 

@@ -1,4 +1,4 @@
-package com.example.moexclient
+package com.example.moexclient.fragments
 
 import android.graphics.Color
 import android.os.Bundle
@@ -8,19 +8,23 @@ import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.ToggleButton
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment
+import com.example.moexclient.App
+import com.example.moexclient.R
 import com.example.moexclient.viewmodels.*
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.XAxis
 import javax.inject.Inject
 import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.formatter.ValueFormatter
+import java.time.LocalDate
+import java.time.ZoneId
+import java.util.*
 import kotlin.math.abs
-import kotlin.math.floor
 
 
 class ChartFragment : Fragment() {
@@ -213,6 +217,14 @@ class ChartFragment : Fragment() {
         sellButton.isEnabled = isEnabled
         toggleButton.isEnabled = isEnabled
         nextButton.isEnabled = isEnabled
+    }
+
+    class DateValueFormatter: ValueFormatter() {
+        override fun getFormattedValue(value: Float): String {
+            val date = Date(value.toLong())
+            val localDate: LocalDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+            return localDate.month.name.take(3) + localDate.year
+        }
     }
 
 

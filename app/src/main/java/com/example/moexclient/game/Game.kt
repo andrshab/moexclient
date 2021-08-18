@@ -1,4 +1,4 @@
-package com.example.moexclient
+package com.example.moexclient.game
 
 import com.example.moexclient.data.Price
 import kotlin.math.*

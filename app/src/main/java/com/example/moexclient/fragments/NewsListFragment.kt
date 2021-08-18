@@ -1,4 +1,4 @@
-package com.example.moexclient
+package com.example.moexclient.fragments
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -10,13 +10,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.moexclient.App
+import com.example.moexclient.R
 import com.example.moexclient.adapters.NewsListAdapter
 import com.example.moexclient.api.Exceptions
 import com.example.moexclient.viewmodels.NewsListViewModel
 import com.example.moexclient.viewmodels.NewsListViewModelFactory
-import kotlinx.coroutines.InternalCoroutinesApi
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject

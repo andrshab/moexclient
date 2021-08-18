@@ -1,8 +1,7 @@
-package com.example.moexclient
+package com.example.moexclient.fragments
 
 import android.os.Bundle
 import android.text.Html
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -11,16 +10,13 @@ import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
+import com.example.moexclient.App
+import com.example.moexclient.R
 import com.example.moexclient.api.ApiConstants
 import com.example.moexclient.api.Exceptions
-import com.example.moexclient.api.MoexService
-import com.example.moexclient.data.News
 import com.example.moexclient.viewmodels.NewsViewModel
 import com.example.moexclient.viewmodels.NewsViewModelFactory
 import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import javax.inject.Inject
 
 
