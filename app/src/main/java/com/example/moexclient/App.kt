@@ -3,6 +3,7 @@ package com.example.moexclient
 import android.app.Application
 import com.example.moexclient.di.ApplicationComponent
 import com.example.moexclient.di.DaggerApplicationComponent
+import com.example.moexclient.di.DataBaseModule
 import com.example.moexclient.di.SharedPreferencesModule
 
 class App: Application() {
@@ -11,6 +12,7 @@ class App: Application() {
         super.onCreate()
         appComponent = DaggerApplicationComponent.builder()
             .sharedPreferencesModule(SharedPreferencesModule(this))
+            .dataBaseModule(DataBaseModule(this))
             .build()
     }
 }

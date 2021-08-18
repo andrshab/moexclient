@@ -3,11 +3,8 @@ package com.example.moexclient.fragments
 import android.graphics.Color
 import android.os.Bundle
 import android.view.*
+import android.widget.*
 import androidx.fragment.app.Fragment
-import android.widget.Button
-import android.widget.ProgressBar
-import android.widget.TextView
-import android.widget.ToggleButton
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -132,6 +129,9 @@ class ChartFragment : Fragment() {
             }
         }
         val profitObserver = Observer<Float> { setProfitTv(it) }
+        val isNewRecordObserver = Observer<Boolean> {
+            if(it) Toast.makeText(context, "NEW RECORD!", Toast.LENGTH_LONG).show()
+        }
 
         viewModel.priceData.observe(viewLifecycleOwner, priceDataObserver)
         viewModel.secName.observe(viewLifecycleOwner, secNameObserver)
@@ -144,6 +144,7 @@ class ChartFragment : Fragment() {
         viewModel.toggleBtn.observe(viewLifecycleOwner, toggleButtonObserver)
         viewModel.isLoading.observe(viewLifecycleOwner, isLoadingObserver)
         viewModel.profit.observe(viewLifecycleOwner, profitObserver)
+        viewModel.isNewRecord.observe(viewLifecycleOwner, isNewRecordObserver)
         if(viewModel.prices.isEmpty()) {
             resetUi()
             viewModel.updateChart()
@@ -165,6 +166,10 @@ class ChartFragment : Fragment() {
             }
             R.id.menu_settings -> {
                 val direction = ChartFragmentDirections.actionChartFragmentToSettingsFragment()
+                NavHostFragment.findNavController(this).navigate(direction)
+            }
+            R.id.menu_records -> {
+                val direction = ChartFragmentDirections.actionChartFragmentToRecordsListFragment()
                 NavHostFragment.findNavController(this).navigate(direction)
             }
         }

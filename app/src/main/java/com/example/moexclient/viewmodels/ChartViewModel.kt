@@ -2,11 +2,13 @@ package com.example.moexclient.viewmodels
 
 import android.content.SharedPreferences
 import android.graphics.Color
+import android.util.Log
 import androidx.lifecycle.*
 import com.example.moexclient.game.Game
 import com.example.moexclient.api.Exceptions
 import com.example.moexclient.data.MoexRepository
 import com.example.moexclient.data.Price
+import com.example.moexclient.data.local.LocalRepository
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
@@ -19,7 +21,9 @@ import javax.inject.Inject
 import kotlin.math.round
 
 
-class ChartViewModel @Inject constructor(private val repository: MoexRepository, private val sPrefs: SharedPreferences) : ViewModel() {
+class ChartViewModel @Inject constructor(private val repository: MoexRepository,
+                                         private val sPrefs: SharedPreferences,
+                                         private val localRepository: LocalRepository) : ViewModel() {
     val priceData: MutableLiveData<LineData> = MutableLiveData()
     val secName: MutableLiveData<String> = MutableLiveData()
     var prices: List<Price> = listOf()
@@ -34,6 +38,7 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository,
     val toggleBtn: MutableLiveData<ToggleState> = MutableLiveData()
     val isLoading: MutableLiveData<Boolean> = MutableLiveData()
     val profit: MutableLiveData<Float> = MutableLiveData()
+    val isNewRecord: MutableLiveData<Boolean> = MutableLiveData()
     val game = Game()
 
     fun updateChart() {
@@ -121,6 +126,7 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository,
             return true
         } else {
             isGameRunning.value = false
+            saveIfRecord()
             currentEntryIndex = 0
             return false
         }
@@ -164,6 +170,15 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository,
             "fast" -> Game.CONSTANTS.FAST
             else -> Game.CONSTANTS.NORMAL
         }
+    private fun saveIfRecord() {
+        viewModelScope.launch {
+            if(localRepository.checkProfit(profit.value)) {
+                localRepository.saveRecord(secName.value, profit.value, startSum.value, sum.value)
+                isNewRecord.value = true
+                isNewRecord.value = false
+            }
+        }
+    }
 
 }
 

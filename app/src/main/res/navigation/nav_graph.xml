@@ -38,9 +38,17 @@
         <action
             android:id="@+id/action_chartFragment_to_settingsFragment"
             app:destination="@id/settingsFragment" />
+        <action
+            android:id="@+id/action_chartFragment_to_recordsListFragment"
+            app:destination="@id/recordsListFragment" />
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.example.moexclient.fragments.SettingsFragment"
         android:label="SettingsFragment" />
+    <fragment
+        android:id="@+id/recordsListFragment"
+        android:name="com.example.moexclient.RecordsListFragment"
+        android:label="Records"
+        tools:layout="@layout/fragment_records_list" />
 </navigation>
