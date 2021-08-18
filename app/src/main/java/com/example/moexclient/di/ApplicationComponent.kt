@@ -1,7 +1,7 @@
 package com.example.moexclient.di
 
 import android.content.SharedPreferences
-import com.example.moexclient.RecordsListFragment
+import com.example.moexclient.fragments.RecordsListFragment
 import com.example.moexclient.data.local.AppDatabase
 import com.example.moexclient.fragments.ChartFragment
 import com.example.moexclient.fragments.NewsFragment

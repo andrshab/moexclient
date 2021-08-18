@@ -48,7 +48,7 @@
         android:label="SettingsFragment" />
     <fragment
         android:id="@+id/recordsListFragment"
-        android:name="com.example.moexclient.RecordsListFragment"
+        android:name="com.example.moexclient.fragments.RecordsListFragment"
         android:label="Records"
         tools:layout="@layout/fragment_records_list" />
 </navigation>
