@@ -17,4 +17,10 @@ class RecordsListViewModel @Inject constructor(private val localRepository: Loca
             recordsList.value = localRepository.getAll()
         }
     }
+    fun clear() {
+        viewModelScope.launch {
+            localRepository.clear()
+            loadRecords()
+        }
+    }
 }

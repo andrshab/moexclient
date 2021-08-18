@@ -12,4 +12,7 @@ class LocalRepository @Inject constructor(private val db: AppDatabase) {
     suspend fun checkProfit(profit: Float?): Boolean {
         return db.userDao().geAllGreaterThan(profit).isEmpty()
     }
+    suspend fun clear() {
+        db.userDao().deleteAll()
+    }
 }

@@ -1,10 +1,8 @@
 package com.example.moexclient.fragments
 
 import android.os.Bundle
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -34,8 +32,20 @@ class RecordsListFragment : Fragment() {
         }
         viewModel.recordsList.observe(viewLifecycleOwner, recordsListObserver)
         viewModel.loadRecords()
-
+        setHasOptionsMenu(true)
         return root
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_records, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId) {
+            R.id.menu_records_clear -> viewModel.clear()
+        }
+        return super.onOptionsItemSelected(item)
     }
 
 }

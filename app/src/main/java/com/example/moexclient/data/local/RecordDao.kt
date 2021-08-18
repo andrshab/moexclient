@@ -1,6 +1,7 @@
 package com.example.moexclient.data.local
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 
@@ -14,4 +15,6 @@ interface RecordDao {
 //    suspend fun getRecordById(id: Int)
     @Insert
     suspend fun insert(record: Record)
+    @Query("DELETE FROM records")
+    suspend fun deleteAll()
 }
