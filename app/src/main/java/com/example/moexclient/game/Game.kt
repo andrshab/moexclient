@@ -50,7 +50,7 @@ class Game {
     }
     object CONSTANTS {
         const val FAST: Long = 5000
-        const val NORMAL: Long = 20000
+        const val NORMAL: Long = 30000
         const val SLOW: Long = 60000
     }
 }
