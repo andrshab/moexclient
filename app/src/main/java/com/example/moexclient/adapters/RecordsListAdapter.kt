@@ -25,10 +25,10 @@ class RecordsListAdapter(private val recordsList: List<Record>, val context: Con
         val p = recordsList[position].profit ?: 0f
 
         if( p >= 0f) {
-            holder.profitTv.text = "+$p%"
+            holder.profitTv.text = "+${p}RUB"
             holder.profitTv.setTextColor(ContextCompat.getColor(context, android.R.color.holo_green_light))
         } else {
-            holder.profitTv.text = "-$p%"
+            holder.profitTv.text = "-${p}RUB"
             holder.profitTv.setTextColor(ContextCompat.getColor(context, android.R.color.holo_red_light))
         }
         holder.nameTv.text = recordsList[position].sec_name

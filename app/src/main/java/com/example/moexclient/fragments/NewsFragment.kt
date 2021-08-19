@@ -17,13 +17,13 @@ import com.example.moexclient.api.ApiConstants
 import com.example.moexclient.api.Exceptions
 import com.example.moexclient.data.News
 import com.example.moexclient.viewmodels.NewsViewModel
-import com.example.moexclient.viewmodels.NewsViewModelFactory
+import com.example.moexclient.viewmodels.ViewModelFactory
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
 class NewsFragment : Fragment() {
-    @Inject lateinit var viewModelFactory: NewsViewModelFactory
+    @Inject lateinit var viewModelFactory: ViewModelFactory
     lateinit var viewModel: NewsViewModel
     private val args: NewsFragmentArgs by navArgs()
     lateinit var newsText: TextView

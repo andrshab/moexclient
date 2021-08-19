@@ -28,7 +28,7 @@ import kotlin.math.abs
 
 class ChartFragment : Fragment() {
 
-    @Inject lateinit var viewModelFactory: ChartViewModelFactory
+    @Inject lateinit var viewModelFactory: ViewModelFactory
     private lateinit var viewModel: ChartViewModel
     private lateinit var nextButton: Button
     private lateinit var chart: LineChart
@@ -85,7 +85,7 @@ class ChartFragment : Fragment() {
         buyButton.setOnClickListener {
             viewModel.buyAll()
             viewModel.moneyLoc.value = "STOCKS"
-            viewModel.buyBtn.value = View.GONE
+            viewModel.buyBtn.value = View.INVISIBLE
             viewModel.sellBtn.value = View.VISIBLE
             chart.axisLeft.removeAllLimitLines()
             chart.axisLeft.addLimitLine(limitLine(viewModel.game.stocksPrice, true))
@@ -93,7 +93,7 @@ class ChartFragment : Fragment() {
         sellButton.setOnClickListener {
             viewModel.sellAll()
             viewModel.moneyLoc.value = "BANK"
-            viewModel.sellBtn.value = View.GONE
+            viewModel.sellBtn.value = View.INVISIBLE
             viewModel.buyBtn.value = View.VISIBLE
         }
         val priceDataObserver = Observer<LineData> {
@@ -193,17 +193,17 @@ class ChartFragment : Fragment() {
     }
 
     private fun resetUi() {
-        nextButton.visibility = View.GONE
+        nextButton.visibility = View.INVISIBLE
         viewModel.toggleBtn.value = ToggleState(View.VISIBLE, false)
         viewModel.moneyLoc.value = "BANK"
         viewModel.buyBtn.value = View.VISIBLE
-        viewModel.sellBtn.value = View.GONE
+        viewModel.sellBtn.value = View.INVISIBLE
     }
     private fun setupNextUi() {
-        viewModel.buyBtn.value = View.GONE
-        viewModel.sellBtn.value = View.GONE
+        viewModel.buyBtn.value = View.INVISIBLE
+        viewModel.sellBtn.value = View.INVISIBLE
         nextButton.visibility = View.VISIBLE
-        viewModel.toggleBtn.value = ToggleState(View.GONE, false)
+        viewModel.toggleBtn.value = ToggleState(View.INVISIBLE, false)
     }
 
     private fun setSumTv(sum: Float) {
@@ -218,10 +218,10 @@ class ChartFragment : Fragment() {
     private fun setProfitTv(profit: Float) {
         if(profit >= 0) {
             profitTv.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.holo_green_light))
-            profitTv.text = "+${abs(profit)}%"
+            profitTv.text = "+${abs(profit)}RUB"
         } else {
             profitTv.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.holo_red_light))
-            profitTv.text = "-${abs(profit)}%"
+            profitTv.text = "-${abs(profit)}RUB"
         }
     }
 

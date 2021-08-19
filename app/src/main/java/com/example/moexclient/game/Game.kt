@@ -18,7 +18,7 @@ class Game {
         stocksNumber = 0//100
         stocks = 0f//stocksPrice * stocksNumber
         startStocks = stocks
-        bank = 10f.pow(ceil(stocksPrice).toInt().length())*100 //stocks
+        bank = max(10f.pow(ceil(stocksPrice).toInt().length())*10, 100000f) //stocks
         startBank = bank
         startSum = startBank + startStocks
     }

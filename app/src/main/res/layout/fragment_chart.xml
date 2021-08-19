@@ -123,17 +123,17 @@
 
     <TextView
         android:id="@+id/profit_tv"
-        android:layout_width="250dp"
+        android:layout_width="220dp"
         android:layout_height="80dp"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="84dp"
         android:autoSizeMaxTextSize="60sp"
         android:autoSizeMinTextSize="12sp"
         android:autoSizeTextType="uniform"
+        android:gravity="bottom"
         android:textSize="60sp"
+        app:layout_constraintBottom_toBottomOf="@+id/buy_button"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/chart"
-        tools:text="+60.0%"
+        tools:text="+60.0RUB"
         tools:textColor="@android:color/holo_green_light" />
 
     <com.airbnb.lottie.LottieAnimationView
@@ -141,9 +141,11 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         app:layout_constraintEnd_toEndOf="@+id/chart"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/chart"
         app:lottie_autoPlay="false"
         app:lottie_loop="false"
-        app:lottie_rawRes="@raw/money_confetti" />
+        app:lottie_rawRes="@raw/money_confetti"
+        tools:layout_editor_absoluteY="0dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

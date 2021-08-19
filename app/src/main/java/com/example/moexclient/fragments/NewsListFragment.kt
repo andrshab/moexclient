@@ -15,14 +15,14 @@ import com.example.moexclient.R
 import com.example.moexclient.adapters.NewsListAdapter
 import com.example.moexclient.api.Exceptions
 import com.example.moexclient.viewmodels.NewsListViewModel
-import com.example.moexclient.viewmodels.NewsListViewModelFactory
+import com.example.moexclient.viewmodels.ViewModelFactory
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
 class NewsListFragment : Fragment() {
-    @Inject lateinit var viewModelFactory: NewsListViewModelFactory
+    @Inject lateinit var viewModelFactory: ViewModelFactory
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewModel: NewsListViewModel
     private val adapter = NewsListAdapter()

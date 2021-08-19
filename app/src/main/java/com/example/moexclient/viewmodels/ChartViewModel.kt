@@ -120,7 +120,7 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository,
             game.stocksPrice = currentPrice(dataSet)//prices[currentEntryIndex].value
             game.stocks = game.stocksNumber * game.stocksPrice
             sum.value = (game.stocks + game.bank).roundToFirst()
-            profit.value = (((game.stocks + game.bank)/game.startSum - 1)*100).roundToFirst()
+            profit.value = (game.stocks + game.bank - game.startSum).roundToFirst()//(((game.stocks + game.bank)/game.startSum - 1)*100).roundToFirst()
             priceData.value = lineData
             currentEntryIndex += 1
             return true
@@ -172,11 +172,12 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository,
         }
     private fun saveIfRecord() {
         viewModelScope.launch {
-            if(localRepository.checkProfit(profit.value)) {
-                localRepository.saveRecord(secName.value, profit.value, startSum.value, sum.value)
+//            localRepository.checkProfit(profit.value)
+            if(profit.value?:0f > 0) {
                 isNewRecord.value = true
                 isNewRecord.value = false
             }
+            localRepository.saveRecord(secName.value, profit.value, startSum.value, sum.value)
         }
     }
 
