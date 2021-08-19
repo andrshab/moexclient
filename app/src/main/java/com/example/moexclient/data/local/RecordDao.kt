@@ -7,7 +7,7 @@ import androidx.room.Query
 
 @Dao
 interface RecordDao {
-    @Query("SELECT * FROM records ORDER BY profit DESC")
+    @Query("SELECT * FROM records ORDER BY id DESC")
     suspend fun getAll(): List<Record>
     @Query("SELECT * FROM records WHERE profit > :p")
     suspend fun geAllGreaterThan(p: Float?): List<Record>

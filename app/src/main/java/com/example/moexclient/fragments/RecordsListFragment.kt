@@ -19,6 +19,7 @@ import sumBy
 import java.lang.Float.sum
 import javax.inject.Inject
 import kotlin.math.abs
+import kotlin.math.round
 
 
 class RecordsListFragment : Fragment() {
@@ -38,7 +39,7 @@ class RecordsListFragment : Fragment() {
         recordsListRv.layoutManager = LinearLayoutManager(context)
         val recordsListObserver = Observer<List<Record>> {
             recordsListRv.adapter = RecordsListAdapter(it)
-            val sum = it.map { it1 -> it1.profit?:0f }.sum()
+            val sum = it.map { it1 -> it1.profit?:0f }.sum().roundToFirst()
             if(sum >= 0) {
                 summaryTv.text = String.format(getString(R.string.pos_profit), abs(sum))
                 summaryTv.setTextColor(greenColor)
@@ -64,6 +65,10 @@ class RecordsListFragment : Fragment() {
             R.id.menu_records_clear -> viewModel.clear()
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun Float.roundToFirst(): Float {
+        return round( this * 10.0f) / 10
     }
 
 }

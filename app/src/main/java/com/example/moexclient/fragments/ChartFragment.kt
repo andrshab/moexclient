@@ -7,6 +7,7 @@ import android.view.*
 import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment
@@ -156,6 +157,12 @@ class ChartFragment : Fragment() {
         if(viewModel.prices.isEmpty()) {
             resetUi()
             viewModel.updateChart()
+        }
+
+        if(toggleButton.isVisible) {
+            nextButton.visibility = View.INVISIBLE
+        } else {
+            nextButton.visibility = View.VISIBLE
         }
         setHasOptionsMenu(true)
         return root
