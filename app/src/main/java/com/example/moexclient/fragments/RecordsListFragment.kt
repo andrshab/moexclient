@@ -25,23 +25,27 @@ class RecordsListFragment : Fragment() {
     private lateinit var viewModel: RecordsListViewModel
     lateinit var recordsListRv: RecyclerView
     lateinit var summaryTv: TextView
+    var greenColor: Int = 0
+    var redColor: Int = 0
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         (activity?.applicationContext as App).appComponent.inject(this)
         viewModel = ViewModelProvider(this, viewModelFactory)[RecordsListViewModel::class.java]
         val root = inflater.inflate(R.layout.fragment_records_list, container, false)
+        greenColor = ContextCompat.getColor(requireContext(), android.R.color.holo_green_light)
+        redColor = ContextCompat.getColor(requireContext(), android.R.color.holo_red_light)
         recordsListRv = root.findViewById(R.id.records_list_rv)
         summaryTv = root.findViewById(R.id.records_summary_tv)
         recordsListRv.layoutManager = LinearLayoutManager(context)
         val recordsListObserver = Observer<List<Record>> {
-            recordsListRv.adapter = RecordsListAdapter(it, requireContext())
+            recordsListRv.adapter = RecordsListAdapter(it, greenColor, redColor)
             val sum = it.map { it1 -> it1.profit?:0f }.sum()
             if(sum >= 0) {
                 summaryTv.text = "+${sum}RUB"
-                summaryTv.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.holo_green_light))
+                summaryTv.setTextColor(greenColor)
             } else {
                 summaryTv.text = "-${sum}RUB"
-                summaryTv.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.holo_red_light))
+                summaryTv.setTextColor(redColor)
             }
 
         }

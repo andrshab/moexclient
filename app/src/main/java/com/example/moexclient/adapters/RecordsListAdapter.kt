@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.moexclient.R
 import com.example.moexclient.data.local.Record
 
-class RecordsListAdapter(private val recordsList: List<Record>, val context: Context): RecyclerView.Adapter<RecordsListAdapter.ItemViewHolder>() {
+class RecordsListAdapter(private val recordsList: List<Record>, private val green: Int, private val red: Int): RecyclerView.Adapter<RecordsListAdapter.ItemViewHolder>() {
     inner class ItemViewHolder(view: View): RecyclerView.ViewHolder(view) {
         val profitTv: TextView = view.findViewById(R.id.records_list_item_profit)
         val nameTv: TextView = view.findViewById(R.id.records_list_item_name)
@@ -26,10 +26,10 @@ class RecordsListAdapter(private val recordsList: List<Record>, val context: Con
 
         if( p >= 0f) {
             holder.profitTv.text = "+${p}RUB"
-            holder.profitTv.setTextColor(ContextCompat.getColor(context, android.R.color.holo_green_light))
+            holder.profitTv.setTextColor(green)
         } else {
             holder.profitTv.text = "-${p}RUB"
-            holder.profitTv.setTextColor(ContextCompat.getColor(context, android.R.color.holo_red_light))
+            holder.profitTv.setTextColor(red)
         }
         holder.nameTv.text = recordsList[position].sec_name
     }
