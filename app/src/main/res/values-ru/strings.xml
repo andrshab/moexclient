@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Симулятор Биржи</string>
+
+    <string name="next_button_label">Next</string>
+
+    <string name="pos_profit">+%1$sRUB</string>
+    <string name="neg_profit">-%1$sRUB</string>
+    <string name="togglebutton">ToggleButton</string>
+    <string name="run">Run</string>
+    <string name="pause">Pause</string>
+    <string name="buy">Купить</string>
+    <string name="sell">Продать</string>
+    <string name="sum">Тек.сумма</string>
+    <string name="start_sum">Нач.сумма</string>
+    <string name="total">ВСЕГО</string>
+    <string name="records">Достижения</string>
+    <string name="news">Новости</string>
+    <string name="settings">Настройки</string>
+    <string name="clear">Очистить</string>
+    <string name="news_nav">Новость</string>
+    <string name="news_list_nav">Новости</string>
+    <string name="trading_nav">Симулятор Биржи</string>
+    <string name="settings_nav">Настройки</string>
+    <string name="records_nav">Достижения</string>
+    <string name="game_speed">Скорость</string>
+    <string name="fast">Быстро</string>
+    <string name="normal">Нормально</string>
+    <string name="slow">Медленно</string>
+</resources>

@@ -46,9 +46,9 @@
         android:layout_marginTop="24dp"
         android:layout_marginEnd="24dp"
         android:background="@drawable/toggle_button"
-        android:text="ToggleButton"
-        android:textOff="Run"
-        android:textOn="Pause"
+        android:text="@string/togglebutton"
+        android:textOff="@string/run"
+        android:textOn="@string/pause"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/chart" />
 
@@ -58,7 +58,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="108dp"
         android:layout_marginEnd="24dp"
-        android:text="Buy"
+        android:text="@string/buy"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/chart" />
 
@@ -68,7 +68,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="108dp"
         android:layout_marginEnd="24dp"
-        android:text="Sell"
+        android:text="@string/sell"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/chart" />
 
@@ -78,7 +78,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="SUM"
+        android:text="@string/sum"
         app:layout_constraintStart_toStartOf="@+id/startsum_label_tv"
         app:layout_constraintTop_toBottomOf="@+id/startsum_label_tv" />
 
@@ -97,7 +97,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="24dp"
-        android:text="START SUM"
+        android:text="@string/start_sum"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/chart" />
 

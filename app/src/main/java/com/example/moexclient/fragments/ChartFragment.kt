@@ -218,10 +218,10 @@ class ChartFragment : Fragment() {
     private fun setProfitTv(profit: Float) {
         if(profit >= 0) {
             profitTv.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.holo_green_light))
-            profitTv.text = "+${abs(profit)}RUB"
+            profitTv.text = String.format(getString(R.string.pos_profit), abs(profit))
         } else {
             profitTv.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.holo_red_light))
-            profitTv.text = "-${abs(profit)}RUB"
+            profitTv.text = String.format(getString(R.string.neg_profit), abs(profit))
         }
     }
 
