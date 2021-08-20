@@ -32,11 +32,17 @@ class SecData(private val historyList: HistoryList) {
 
 data class Price(val date: Date, val value: Float) {
     internal object Compare {
-        fun min(a: Price, b: Price): Price {
+        fun minVal(a: Price, b: Price): Price {
             return if (a.value < b.value) a else b
         }
-        fun max(a: Price, b: Price): Price {
+        fun maxVal(a: Price, b: Price): Price {
             return if(a.value > b.value) a else b
+        }
+        fun minDate(a: Price, b: Price): Price {
+            return if (a.date < b.date) a else b
+        }
+        fun maxDate(a: Price, b: Price): Price {
+            return if(a.date > b.date) a else b
         }
     }
 }

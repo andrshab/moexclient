@@ -1,169 +1,136 @@
 package com.example.moexclient.viewmodels
 
+import android.content.SharedPreferences
 import android.graphics.Color
 import android.util.Log
 import androidx.lifecycle.*
+import com.example.moexclient.game.Game
 import com.example.moexclient.api.Exceptions
 import com.example.moexclient.data.MoexRepository
 import com.example.moexclient.data.Price
-import com.github.mikephil.charting.charts.CombinedChart
-import com.github.mikephil.charting.data.CombinedData
+import com.example.moexclient.data.local.LocalRepository
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.apache.commons.math3.geometry.euclidean.twod.Line
-import org.nield.kotlinstatistics.standardDeviation
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+import kotlin.math.round
 
 
-class ChartViewModel @Inject constructor(private val repository: MoexRepository) : ViewModel() {
-    val chartData: MutableLiveData<CombinedData> = MutableLiveData()
+class ChartViewModel @Inject constructor(private val repository: MoexRepository,
+                                         private val sPrefs: SharedPreferences,
+                                         private val localRepository: LocalRepository) : ViewModel() {
+    val priceData: MutableLiveData<LineData> = MutableLiveData()
     val secName: MutableLiveData<String> = MutableLiveData()
-    val xAxisMax: MutableLiveData<Float> = MutableLiveData()
-    val statistics: MutableLiveData<Int> = MutableLiveData()
-    var totalClicks: Int = 0
-    var trueClicks: Int = 0
-    var trueLineColor: Int = 0
-    var realPrices: List<Price> = listOf()
+    var prices: List<Price> = listOf()
+    private var currentEntryIndex: Int = 0
+    val chartEdge: MutableLiveData<Edges> = MutableLiveData()
+    val isGameRunning: MutableLiveData<Boolean> = MutableLiveData()
+    val sum: MutableLiveData<Float> = MutableLiveData()
+    val startSum: MutableLiveData<Float> = MutableLiveData()
+    val moneyLoc: MutableLiveData<String> = MutableLiveData()
+    val buyBtn: MutableLiveData<Int> = MutableLiveData()
+    val sellBtn: MutableLiveData<Int> = MutableLiveData()
+    val toggleBtn: MutableLiveData<ToggleState> = MutableLiveData()
+    val isLoading: MutableLiveData<Boolean> = MutableLiveData()
+    val profit: MutableLiveData<Float> = MutableLiveData()
+    val isNewRecord: MutableLiveData<Boolean> = MutableLiveData()
+    val game = Game()
+
     fun updateChart() {
         viewModelScope.launch(Exceptions.handler) {
+            isLoading.value = true
             val topSecsData = repository.getTopSecsData()
             val randomSecsItem = topSecsData.secIdList.random()
             val boardId = randomSecsItem.boardId
             val secId = randomSecsItem.secId
             var secData = repository.getSecOnBoardData(secId, boardId = boardId, sortOrder = "asc")
-            Log.d("ChartViewModel", randomSecsItem.name.toString() + boardId)
             if (secData.prices.isNotEmpty()) {
                 val startDate = secData.prices[0].date
                 secData = repository.getSecOnBoardData(secId, boardId = boardId, sortOrder = "desc")
                 val endDate = secData.prices[0].date
                 val randDate = randDateString(startDate, endDate)
                 secData = repository.getSecOnBoardData(secId, boardId = boardId, from = randDate)
-                //split prices
-                val (primary, real, fake) = splitPrices(secData.prices)
-                realPrices = real
+                isLoading.value = false
+                prices = secData.prices
+                currentEntryIndex = prices.size/4
+                game.reset(prices.subList(0, currentEntryIndex))
+                startSum.value = game.startSum
 
-                var realColor: Int
-                var fakeColor: Int
-                if(real.last().value > fake.last().value) {
-                    realColor = Color.GREEN
-                    fakeColor = Color.RED
-                } else {
-                    realColor = Color.RED
-                    fakeColor = Color.GREEN
-                }
-                trueLineColor = realColor
 
-                val primaryDataSet = dataSet(primary, Color.BLUE, true, "primary")
-                val realDataSet = dataSet(real, realColor, false, "real")
-                val fakeDataSet = dataSet(fake, fakeColor, false,"fake")
-                val lineData = LineData()
-                lineData.addDataSet(primaryDataSet)
-                lineData.addDataSet(realDataSet)
-                lineData.addDataSet(fakeDataSet)
+                chartEdge.value = Edges(
+                    prices.reduce(Price.Compare::minDate).date.time.toFloat(),
+                    prices.reduce(Price.Compare::maxDate).date.time.toFloat(),
+                    prices.reduce(Price.Compare::minVal).value,
+                    prices.reduce(Price.Compare::maxVal).value
+                )
 
-                val combinedData = CombinedData()
-                combinedData.setData(lineData)
-
-                xAxisMax.value = realDataSet.xMax
-                chartData.value = combinedData
                 secName.value = randomSecsItem.name
+
+                showNextPrice()
+                isGameRunning.value = true
             } else {
                 secName.value = "No data for ${randomSecsItem.name}"
-                chartData.value?.setData(LineData())
+                priceData.value = LineData()
             }
 
         }
 
     }
-
-    fun showAnswer() {
-        for(price in realPrices) {
-            chartData.value?.lineData?.addEntry(Entry(price.date.time.toFloat(), price.value),0)
-        }
+    fun buyAll() {
+        buy((game.bank/game.stocksPrice).toInt() * 2)
+    }
+    fun sellAll() {
+        sell(game.stocksNumber * 2)
     }
 
-    fun isTrueColor(clickedColor: Int): Boolean {
-        totalClicks += 1
-        if(clickedColor == trueLineColor) {
-            trueClicks += 1
-        }
-        statistics.value = (100*trueClicks)/totalClicks
-        Log.d("isTrueColor", "true = $trueClicks, total = $totalClicks, stats = ${statistics.value}")
-        return clickedColor == trueLineColor
+    fun buy(number: Int)  {
+        game.buy(number)
+        sum.value = (game.stocks + game.bank).roundToFirst()
     }
 
-    private fun splitPrices(prices: List<Price>): Split {
-        val primary = mutableListOf<Price>()
-        val real = mutableListOf<Price>()
-
-        val splitPoint = prices.size*2/3
-        for (i in 0..splitPoint) {
-            primary.add(prices[i])
-        }
-        for (i in splitPoint until prices.size) {
-            real.add(prices[i])
-        }
-        val fake = fakePrices(real)
-        return Split(primary, real, fake)
+    fun sell(number: Int) {
+        game.sell(number)
+        sum.value = (game.stocks + game.bank).roundToFirst()
     }
 
-    private fun fakePrices(real: List<Price>): List<Price> {
-        val fake = mutableListOf<Price>()
-
-        val fakeValues = fakeValues(real)
-        val fakeDates = mutableListOf<Date>()
-        for (price in real) {
-            fakeDates.add(price.date)
-        }
-
-        for (i in real.indices) {
-            fake.add(Price(fakeDates[i], fakeValues[i]))
-        }
-        return fake
-    }
-
-
-    private fun fakeValues(real: List<Price>): List<Float> {
-//        val minFake = real.reduce(Price.Compare::min)
-//        val maxFake = real.reduce(Price.Compare::max)
-        val fakeValues = mutableListOf<Float>()
-        val base = mutableListOf<Float>()
-        val realValues = mutableListOf<Float>()
-        for(price in real) {
-            realValues.add(price.value)
-        }
-
-        val sigma = realValues.standardDeviation()
-        val average = realValues.average()
-        val baseRandNum = 1 + (100*sigma/average).toInt()
-        Log.d("ChartViewModel", "sigma = $sigma, average = $average, randNum = $baseRandNum")
-
-        var left = 0.0f
-        var right = Random().nextFloat()*sigma.toFloat()
-        var j=0
-        for(i in real.indices) {
-            base.add(left + j*(right-left)/baseRandNum)
-            j += 1
-            if(i%baseRandNum == 0 && i > 0){
-                j = 0
-                left = right
-                right = Random().nextFloat()*sigma.toFloat()
+    fun animate(isTrue: Boolean) {
+        viewModelScope.launch(Dispatchers.Main) {
+            val time = settingToTime(sPrefs.getString("time", "normal")?:"normal")
+            val durationMillis = time / prices.size
+            delay(durationMillis)
+            if(isTrue && isGameRunning.value == true){
+                showNextPrice()
             }
         }
+    }
 
-        for (i in real.indices) {
-            if(i == 0) {
-                fakeValues.add(real[0].value)
-            } else {
-                fakeValues.add(real[0].value + base[i])
-            }
+    private fun currentPrice(dataSet: LineDataSet): Float{
+        val entries = dataSet.values
+        return if(entries.isNotEmpty()) entries.last().y else 0f
+    }
 
+    fun showNextPrice(): Boolean {
+        val dataSet = dataSet(prices.subList(0, currentEntryIndex), Color.BLUE, true, "primary")
+        val lineData = LineData(dataSet)
+        if(currentEntryIndex < prices.size) {
+            game.stocksPrice = currentPrice(dataSet)//prices[currentEntryIndex].value
+            game.stocks = game.stocksNumber * game.stocksPrice
+            sum.value = (game.stocks + game.bank).roundToFirst()
+            profit.value = (game.stocks + game.bank - game.startSum).roundToFirst()//(((game.stocks + game.bank)/game.startSum - 1)*100).roundToFirst()
+            priceData.value = lineData
+            currentEntryIndex += 1
+            return true
+        } else {
+            isGameRunning.value = false
+            saveIfRecord()
+            currentEntryIndex = 0
+            return false
         }
-        return fakeValues
     }
 
     private fun dataSet(prices: List<Price>, color: Int, filled: Boolean, label: String): LineDataSet {
@@ -173,7 +140,7 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository)
         }
         val dataSet = LineDataSet(entries, label)
         dataSet.setDrawFilled(filled)
-        dataSet.setDrawValues(false)
+        dataSet.setDrawValues(true)
         dataSet.fillColor = Color.BLUE
         dataSet.color = color
         dataSet.setDrawCircles(false)
@@ -194,6 +161,28 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository)
         return SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).format(Date(rand))
     }
 
-    data class Split(val primary: List<Price>, val real: List<Price>, val fake: List<Price>)
+    private fun Float.roundToFirst(): Float {
+        return round( this * 10.0f) / 10
+    }
+    private fun settingToTime(setting: String): Long =
+        when(setting) {
+            "slow" -> Game.CONSTANTS.SLOW
+            "normal" -> Game.CONSTANTS.NORMAL
+            "fast" -> Game.CONSTANTS.FAST
+            else -> Game.CONSTANTS.NORMAL
+        }
+    private fun saveIfRecord() {
+        viewModelScope.launch {
+//            localRepository.checkProfit(profit.value)
+            if(profit.value?:0f > 0) {
+                isNewRecord.value = true
+                isNewRecord.value = false
+            }
+            localRepository.saveRecord(secName.value, profit.value, startSum.value, sum.value)
+        }
+    }
 
 }
+
+data class Edges(val xMin: Float, val xMax: Float, val yMin: Float, val yMax: Float)
+data class ToggleState(val vis: Int, val isChecked: Boolean)

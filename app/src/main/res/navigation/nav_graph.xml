@@ -7,9 +7,9 @@
 
     <fragment
         android:id="@+id/newsListFragment"
-        android:name="com.example.moexclient.NewsListFragment"
-        android:label="fragment_news_list"
-        tools:layout="@layout/fragment_news_list" >
+        android:name="com.example.moexclient.fragments.NewsListFragment"
+        android:label="@string/news_list_nav"
+        tools:layout="@layout/fragment_news_list">
         <action
             android:id="@+id/action_newsListFragment_to_newsFragment"
             app:destination="@id/newsFragment"
@@ -20,16 +20,35 @@
     </fragment>
     <fragment
         android:id="@+id/newsFragment"
-        android:name="com.example.moexclient.NewsFragment"
-        android:label="fragment_news"
-        tools:layout="@layout/fragment_news" >
+        android:name="com.example.moexclient.fragments.NewsFragment"
+        android:label="@string/news_nav"
+        tools:layout="@layout/fragment_news">
         <argument
             android:name="newsId"
             app:argType="integer" />
     </fragment>
     <fragment
         android:id="@+id/chartFragment"
-        android:name="com.example.moexclient.ChartFragment"
-        android:label="fragment_chart"
-        tools:layout="@layout/fragment_chart" />
+        android:name="com.example.moexclient.fragments.ChartFragment"
+        android:label="@string/trading_nav"
+        tools:layout="@layout/fragment_chart">
+        <action
+            android:id="@+id/action_chartFragment_to_newsListFragment"
+            app:destination="@id/newsListFragment" />
+        <action
+            android:id="@+id/action_chartFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
+        <action
+            android:id="@+id/action_chartFragment_to_recordsListFragment"
+            app:destination="@id/recordsListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.example.moexclient.fragments.SettingsFragment"
+        android:label="@string/settings_nav" />
+    <fragment
+        android:id="@+id/recordsListFragment"
+        android:name="com.example.moexclient.fragments.RecordsListFragment"
+        android:label="@string/records_nav"
+        tools:layout="@layout/fragment_records_list" />
 </navigation>

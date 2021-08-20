@@ -1,0 +1,9 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+    <ListPreference
+        app:defaultValue="normal"
+        app:entries="@array/time_entries"
+        app:entryValues="@array/time_values"
+        app:key="time"
+        app:title="@string/game_speed"
+        app:useSimpleSummaryProvider="true" />
+</PreferenceScreen>
