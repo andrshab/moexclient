@@ -41,6 +41,7 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository,
     val isNewRecord: MutableLiveData<Boolean> = MutableLiveData()
     val game = Game()
 
+
     fun updateChart() {
         viewModelScope.launch(Exceptions.handler) {
             isLoading.value = true
