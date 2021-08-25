@@ -3,6 +3,7 @@ package com.example.moexclient.viewmodels
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.util.Log
+import android.view.View
 import androidx.lifecycle.*
 import com.example.moexclient.game.Game
 import com.example.moexclient.api.Exceptions
@@ -12,6 +13,7 @@ import com.example.moexclient.data.local.LocalRepository
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
+import com.google.android.gms.ads.nativead.NativeAd
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -39,6 +41,10 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository,
     val isLoading: MutableLiveData<Boolean> = MutableLiveData()
     val profit: MutableLiveData<Float> = MutableLiveData()
     val isNewRecord: MutableLiveData<Boolean> = MutableLiveData()
+    val adState: MutableLiveData<Int> = MutableLiveData()
+    val chartState: MutableLiveData<Int> = MutableLiveData()
+    val ad: MutableLiveData<NativeAd> = MutableLiveData()
+    private var adCounter: Int = 0
     val game = Game()
 
 
@@ -181,6 +187,18 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository,
             }
             localRepository.saveRecord(secName.value, profit.value, startSum.value, sum.value)
         }
+    }
+
+    fun checkAdCounter(): Boolean {
+        return adCounter == Constants.AD_COUNTER_MAX
+    }
+
+    fun incAdCounter() {
+        adCounter = if(adCounter < Constants.AD_COUNTER_MAX) adCounter.plus(1) else 0
+
+    }
+    object Constants {
+        const val AD_COUNTER_MAX = 0
     }
 
 }

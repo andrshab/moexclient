@@ -3,10 +3,12 @@ package com.example.moexclient.fragments
 import android.animation.Animator
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.core.content.ContextCompat
+import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -21,10 +23,17 @@ import com.github.mikephil.charting.components.XAxis
 import javax.inject.Inject
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.formatter.ValueFormatter
+import com.google.android.gms.ads.*
+import com.google.android.gms.ads.nativead.NativeAd
+import com.google.android.gms.ads.nativead.NativeAdOptions
 import java.time.LocalDate
 import java.time.ZoneId
 import java.util.*
 import kotlin.math.abs
+import com.google.android.ads.nativetemplates.TemplateView
+
+import com.google.android.ads.nativetemplates.NativeTemplateStyle
+import java.lang.NullPointerException
 
 
 class ChartFragment : Fragment() {
@@ -42,6 +51,8 @@ class ChartFragment : Fragment() {
     private lateinit var profitTv: TextView
     private lateinit var progressBar: ProgressBar
     private lateinit var moneyAnimation: LottieAnimationView
+    private lateinit var adLoader: AdLoader
+    private lateinit var adTemplate: TemplateView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -71,11 +82,30 @@ class ChartFragment : Fragment() {
         profitTv = root.findViewById(R.id.profit_tv)
         progressBar = root.findViewById(R.id.progress_bar)
         moneyAnimation = root.findViewById(R.id.money_confetti)
+        adTemplate = root.findViewById(R.id.native_template)
         moneyAnimation.visibility = View.INVISIBLE
+        adLoader = AdLoader.Builder(requireContext(), "ca-app-pub-5097316419453121/1903585632")
+            .forNativeAd { ad : NativeAd ->
+                viewModel.ad.value = ad
+                buttonsIsEnabled(true)
+            }
+            .withAdListener(object : AdListener() {
+                override fun onAdFailedToLoad(adError: LoadAdError) {
+                    Log.d("ChartFragment", "ad failed to load")
+                    buttonsIsEnabled(true)
+                }
+            })
+            .build()
 
         nextButton.setOnClickListener {
-            resetUi()
-            viewModel.updateChart()
+            if(viewModel.checkAdCounter()) {
+                setupAdUi()
+                loadAd()
+            } else {
+                resetUi()
+                viewModel.updateChart()
+            }
+            viewModel.incAdCounter()
         }
         toggleButton.setOnCheckedChangeListener { button, isChecked ->
             viewModel.toggleBtn.value = ToggleState(button.visibility, isChecked)
@@ -114,9 +144,14 @@ class ChartFragment : Fragment() {
                 chart.axisLeft.addLimitLine(limitLine(curPrice, true))
             } else {
                 chart.axisLeft.addLimitLine(limitLine(curPrice, false))
-                setupNextUi()
+                if(viewModel.adState.value == View.VISIBLE) {
+                    setupAdUi()
+                } else {
+                    setupNextUi()
+                    chart.invalidate()
+                }
             }
-            chart.invalidate()
+
         }
         val sumObserver = Observer<Float> { setSumTv(it) }
         val startSumObserver = Observer<Float> { startSumTv.text = it.toString() }
@@ -141,6 +176,15 @@ class ChartFragment : Fragment() {
                 moneyAnimation.playAnimation()
             }
         }
+        val adStateObserver = Observer<Int> {
+            adTemplate.visibility = it
+        }
+        val chartStateObserver = Observer<Int> {
+            chart.visibility = it
+        }
+        val adObserver = Observer<NativeAd> {
+            adTemplate.setNativeAd(it)
+        }
 
         viewModel.priceData.observe(viewLifecycleOwner, priceDataObserver)
         viewModel.secName.observe(viewLifecycleOwner, secNameObserver)
@@ -154,6 +198,9 @@ class ChartFragment : Fragment() {
         viewModel.isLoading.observe(viewLifecycleOwner, isLoadingObserver)
         viewModel.profit.observe(viewLifecycleOwner, profitObserver)
         viewModel.isNewRecord.observe(viewLifecycleOwner, isNewRecordObserver)
+        viewModel.adState.observe(viewLifecycleOwner, adStateObserver)
+        viewModel.chartState.observe(viewLifecycleOwner, chartStateObserver)
+        viewModel.ad.observe(viewLifecycleOwner, adObserver)
         if(viewModel.prices.isEmpty()) {
             resetUi()
             viewModel.updateChart()
@@ -191,6 +238,11 @@ class ChartFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
+    private fun loadAd() {
+        adLoader.loadAd(AdRequest.Builder().build())
+        buttonsIsEnabled(false)
+    }
+
     private fun limitLine(y: Float, dashed: Boolean): LimitLine {
         val ll = LimitLine(y)
         ll.lineWidth = 2f
@@ -205,12 +257,21 @@ class ChartFragment : Fragment() {
         viewModel.moneyLoc.value = "BANK"
         viewModel.buyBtn.value = View.VISIBLE
         viewModel.sellBtn.value = View.INVISIBLE
+        viewModel.adState.value = View.INVISIBLE
+        viewModel.chartState.value = View.VISIBLE
     }
     private fun setupNextUi() {
+        viewModel.chartState.value = View.VISIBLE
+        viewModel.adState.value = View.INVISIBLE
         viewModel.buyBtn.value = View.INVISIBLE
         viewModel.sellBtn.value = View.INVISIBLE
         nextButton.visibility = View.VISIBLE
         viewModel.toggleBtn.value = ToggleState(View.INVISIBLE, false)
+    }
+    private fun setupAdUi() {
+        setupNextUi()
+        viewModel.chartState.value = View.INVISIBLE
+        viewModel.adState.value = View.VISIBLE
     }
 
     private fun setSumTv(sum: Float) {

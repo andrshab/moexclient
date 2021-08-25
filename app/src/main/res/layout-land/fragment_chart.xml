@@ -23,11 +23,21 @@
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/chart"
         android:layout_width="400dp"
-        android:layout_height="200dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="10dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="4dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sec_name_tv" />
+
+    <com.google.android.ads.nativetemplates.TemplateView
+        android:id="@+id/native_template"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        app:gnt_template_type="@layout/gnt_small_template_view"
+        app:layout_constraintEnd_toEndOf="@+id/chart"
+        app:layout_constraintStart_toStartOf="@+id/chart" />
 
     <Button
         android:id="@+id/next_button"
