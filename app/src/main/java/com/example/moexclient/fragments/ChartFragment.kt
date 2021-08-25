@@ -216,6 +216,9 @@ class ChartFragment : Fragment() {
         } else {
             nextButton.visibility = View.VISIBLE
         }
+        if(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            (activity as AppCompatActivity).supportActionBar?.hide()
+        }
         setHasOptionsMenu(true)
         return root
     }
