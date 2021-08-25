@@ -198,7 +198,7 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository,
 
     }
     object Constants {
-        const val AD_COUNTER_MAX = 10
+        const val AD_COUNTER_MAX = 5
     }
 
 }

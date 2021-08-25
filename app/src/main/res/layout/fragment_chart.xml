@@ -6,17 +6,56 @@
     android:layout_height="match_parent"
     tools:context=".fragments.ChartFragment">
 
-    <TextView
-        android:id="@+id/sec_name_tv"
+    <LinearLayout
+        android:id="@+id/header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
-        android:gravity="center_horizontal"
-        android:textAllCaps="true"
-        android:textSize="20sp"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="0dp"
-        tools:text="Яндекс" />
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/startsum_tv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:layout_gravity="bottom"
+            tools:layout_editor_absoluteX="115dp"
+            tools:layout_editor_absoluteY="361dp"
+            tools:text="353453" />
+
+        <TextView
+            android:id="@+id/sec_name_tv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:gravity="center_horizontal"
+            android:layout_gravity="bottom"
+            android:textAllCaps="true"
+            android:textSize="20sp"
+            app:autoSizeMaxTextSize="20sp"
+            app:autoSizeMinTextSize="12sp"
+            app:autoSizeTextType="uniform"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_editor_absoluteX="0dp"
+            tools:text="Яндекс" />
+
+        <TextView
+            android:id="@+id/sum_tv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:layout_gravity="bottom"
+            tools:layout_editor_absoluteX="115dp"
+            tools:layout_editor_absoluteY="389dp"
+            tools:text="56756"
+            tools:textColor="@android:color/holo_green_light" />
+
+    </LinearLayout>
+
+
 
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/chart"
@@ -24,7 +63,7 @@
         android:layout_height="300dp"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
-        app:layout_constraintTop_toBottomOf="@+id/sec_name_tv"
+        app:layout_constraintTop_toBottomOf="@+id/header"
         tools:layout_editor_absoluteX="0dp" />
 
     <com.google.android.ads.nativetemplates.TemplateView
@@ -36,88 +75,47 @@
         app:layout_constraintTop_toTopOf="@+id/money_confetti" />
 
 
-    <Button
-        android:id="@+id/next_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="24dp"
-        android:text="@string/next_button_label"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/chart" />
-
-
     <ToggleButton
         android:id="@+id/toggle_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="24dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="12dp"
         android:background="@drawable/toggle_button"
         android:text="@string/togglebutton"
         android:textOff="@string/run"
         android:textOn="@string/pause"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/chart" />
-
-    <Button
-        android:id="@+id/buy_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="108dp"
-        android:layout_marginEnd="24dp"
-        android:text="@string/buy"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/chart" />
-
-    <Button
-        android:id="@+id/sell_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="108dp"
-        android:layout_marginEnd="24dp"
-        android:text="@string/sell"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/chart" />
-
-
-    <TextView
-        android:id="@+id/sum_label_tv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="@string/sum"
-        app:layout_constraintStart_toStartOf="@+id/startsum_label_tv"
-        app:layout_constraintTop_toBottomOf="@+id/startsum_label_tv" />
-
-    <TextView
-        android:id="@+id/sum_tv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="@+id/startsum_tv"
-        app:layout_constraintTop_toTopOf="@+id/sum_label_tv"
-        tools:text="56756"
-        tools:textColor="@android:color/holo_green_light"/>
-
-    <TextView
-        android:id="@+id/startsum_label_tv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
-        android:text="@string/start_sum"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/chart" />
 
-    <TextView
-        android:id="@+id/startsum_tv"
+
+    <FrameLayout
+        android:id="@+id/play_buttons"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        app:layout_constraintStart_toEndOf="@+id/startsum_label_tv"
-        app:layout_constraintTop_toTopOf="@+id/startsum_label_tv"
-        tools:text="353453" />
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/chart">
 
+        <Button
+            android:id="@+id/buy_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/buy" />
+
+        <Button
+            android:id="@+id/sell_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sell" />
+
+        <Button
+            android:id="@+id/next_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/next_button_label" />
+    </FrameLayout>
 
     <ProgressBar
         android:id="@+id/progress_bar"
@@ -131,21 +129,25 @@
 
     <TextView
         android:id="@+id/profit_tv"
-        android:layout_width="220dp"
+        android:layout_width="match_parent"
         android:layout_height="80dp"
-        android:layout_marginStart="24dp"
-        android:autoSizeMaxTextSize="60sp"
-        android:autoSizeMinTextSize="12sp"
-        android:autoSizeTextType="uniform"
-        android:gravity="bottom"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:gravity="center"
         android:textSize="60sp"
-        app:layout_constraintBottom_toBottomOf="@+id/buy_button"
+        app:autoSizeMaxTextSize="60sp"
+        app:autoSizeMinTextSize="12sp"
+        app:autoSizeTextType="uniform"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toggle_button"
         tools:text="+60.0RUB"
         tools:textColor="@android:color/holo_green_light" />
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/money_confetti"
+        android:visibility="gone"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         app:layout_constraintEnd_toEndOf="@+id/chart"

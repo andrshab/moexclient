@@ -1,8 +1,11 @@
 package com.example.moexclient
 
+import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.Window
+import android.view.WindowManager
 import androidx.navigation.Navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration

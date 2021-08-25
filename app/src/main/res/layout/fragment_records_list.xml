@@ -33,9 +33,9 @@
             android:layout_height="30dp"
             android:layout_weight="2"
             android:gravity="end|bottom"
-            android:autoSizeMaxTextSize="25sp"
-            android:autoSizeMinTextSize="12sp"
-            android:autoSizeTextType="uniform"
+            app:autoSizeMaxTextSize="25sp"
+            app:autoSizeMinTextSize="12sp"
+            app:autoSizeTextType="uniform"
             tools:text="+323450.0RUB" />
     </LinearLayout>
 

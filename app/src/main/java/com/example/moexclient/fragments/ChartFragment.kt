@@ -1,11 +1,14 @@
 package com.example.moexclient.fragments
 
 import android.animation.Animator
+import android.content.res.Configuration
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.*
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.core.content.ContextCompat
 import androidx.core.view.children
@@ -34,6 +37,8 @@ import com.google.android.ads.nativetemplates.TemplateView
 
 import com.google.android.ads.nativetemplates.NativeTemplateStyle
 import java.lang.NullPointerException
+import android.text.format.DateFormat
+import androidx.appcompat.app.AppCompatActivity
 
 
 class ChartFragment : Fragment() {
@@ -303,8 +308,9 @@ class ChartFragment : Fragment() {
     class DateValueFormatter: ValueFormatter() {
         override fun getFormattedValue(value: Float): String {
             val date = Date(value.toLong())
-            val localDate: LocalDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
-            return localDate.month.name.take(3) + localDate.year
+            val month = DateFormat.format("MMM", date) as String
+            val year = DateFormat.format("yyyy", date) as String
+            return month.take(3).uppercase() + year
         }
     }
 
