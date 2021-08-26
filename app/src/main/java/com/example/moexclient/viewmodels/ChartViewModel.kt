@@ -147,7 +147,7 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository,
         }
         val dataSet = LineDataSet(entries, label)
         dataSet.setDrawFilled(filled)
-        dataSet.setDrawValues(true)
+        dataSet.setDrawValues(false)
         dataSet.fillColor = Color.BLUE
         dataSet.color = color
         dataSet.setDrawCircles(false)
