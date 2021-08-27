@@ -43,7 +43,7 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository,
     val isNewRecord: MutableLiveData<Boolean> = MutableLiveData()
     val adState: MutableLiveData<Int> = MutableLiveData()
     val chartState: MutableLiveData<Int> = MutableLiveData()
-    val ad: MutableLiveData<NativeAd> = MutableLiveData()
+    var isAdShowing: Boolean = false
     private var adCounter: Int = 0
     val game = Game()
 

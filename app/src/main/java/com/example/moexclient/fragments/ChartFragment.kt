@@ -91,8 +91,9 @@ class ChartFragment : Fragment() {
         moneyAnimation.visibility = View.INVISIBLE
         adLoader = AdLoader.Builder(requireContext(), "ca-app-pub-5097316419453121/1903585632")
             .forNativeAd { ad : NativeAd ->
-                viewModel.ad.value = ad
+                if(isDetached) ad.destroy() else adTemplate.setNativeAd(ad)
                 buttonsIsEnabled(true)
+                viewModel.isAdShowing = true
             }
             .withAdListener(object : AdListener() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
@@ -103,6 +104,9 @@ class ChartFragment : Fragment() {
             .build()
 
         nextButton.setOnClickListener {
+            if(viewModel.isAdShowing) {
+                viewModel.isAdShowing = false
+            }
             if(viewModel.checkAdCounter()) {
                 setupAdUi()
                 loadAd()
@@ -131,6 +135,7 @@ class ChartFragment : Fragment() {
             viewModel.moneyLoc.value = "BANK"
             viewModel.sellBtn.value = View.INVISIBLE
             viewModel.buyBtn.value = View.VISIBLE
+            chart.axisLeft.addLimitLine(limitLine(viewModel.game.stocksPrice, false))
         }
         val priceDataObserver = Observer<LineData> {
             chart.data = it
@@ -143,12 +148,9 @@ class ChartFragment : Fragment() {
             chart.xAxis.axisMaximum = it.xMax
         }
         val isGameRunningObserver = Observer<Boolean> {
-            val curPrice = viewModel.game.stocksPrice
             if(it) {
                 chart.axisLeft.removeAllLimitLines()
-                chart.axisLeft.addLimitLine(limitLine(curPrice, true))
             } else {
-                chart.axisLeft.addLimitLine(limitLine(curPrice, false))
                 if(viewModel.adState.value == View.VISIBLE) {
                     setupAdUi()
                 } else {
@@ -187,9 +189,6 @@ class ChartFragment : Fragment() {
         val chartStateObserver = Observer<Int> {
             chart.visibility = it
         }
-        val adObserver = Observer<NativeAd> {
-            adTemplate.setNativeAd(it)
-        }
 
         viewModel.priceData.observe(viewLifecycleOwner, priceDataObserver)
         viewModel.secName.observe(viewLifecycleOwner, secNameObserver)
@@ -205,12 +204,10 @@ class ChartFragment : Fragment() {
         viewModel.isNewRecord.observe(viewLifecycleOwner, isNewRecordObserver)
         viewModel.adState.observe(viewLifecycleOwner, adStateObserver)
         viewModel.chartState.observe(viewLifecycleOwner, chartStateObserver)
-        viewModel.ad.observe(viewLifecycleOwner, adObserver)
         if(viewModel.prices.isEmpty()) {
             resetUi()
             viewModel.updateChart()
         }
-
         if(toggleButton.isVisible) {
             nextButton.visibility = View.INVISIBLE
         } else {
@@ -221,6 +218,19 @@ class ChartFragment : Fragment() {
         }
         setHasOptionsMenu(true)
         return root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if(viewModel.isAdShowing) {
+            setupAdUi()
+            loadAd()
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        adTemplate.destroyNativeAd()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
