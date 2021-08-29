@@ -2,18 +2,16 @@ package com.example.moexclient.viewmodels
 
 import android.content.SharedPreferences
 import android.graphics.Color
-import android.util.Log
-import android.view.View
 import androidx.lifecycle.*
 import com.example.moexclient.game.Game
 import com.example.moexclient.api.Exceptions
+import com.example.moexclient.api.ErrorCallback
 import com.example.moexclient.data.MoexRepository
 import com.example.moexclient.data.Price
 import com.example.moexclient.data.local.LocalRepository
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
-import com.google.android.gms.ads.nativead.NativeAd
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -43,13 +41,14 @@ class ChartViewModel @Inject constructor(private val repository: MoexRepository,
     val isNewRecord: MutableLiveData<Boolean> = MutableLiveData()
     val adState: MutableLiveData<Int> = MutableLiveData()
     val chartState: MutableLiveData<Int> = MutableLiveData()
+    lateinit var networkError: () -> Unit
     var isAdShowing: Boolean = false
     private var adCounter: Int = 0
     val game = Game()
 
 
     fun updateChart() {
-        viewModelScope.launch(Exceptions.handler) {
+        viewModelScope.launch(Exceptions.handler + ErrorCallback{networkError.invoke()}) {
             isLoading.value = true
             val topSecsData = repository.getTopSecsData()
             val randomSecsItem = topSecsData.secIdList.random()

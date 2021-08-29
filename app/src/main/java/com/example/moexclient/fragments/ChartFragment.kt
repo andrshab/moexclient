@@ -1,17 +1,13 @@
 package com.example.moexclient.fragments
 
-import android.animation.Animator
 import android.content.res.Configuration
 import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.*
-import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.core.content.ContextCompat
-import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -28,14 +24,10 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.google.android.gms.ads.*
 import com.google.android.gms.ads.nativead.NativeAd
-import com.google.android.gms.ads.nativead.NativeAdOptions
-import java.time.LocalDate
-import java.time.ZoneId
 import java.util.*
 import kotlin.math.abs
 import com.google.android.ads.nativetemplates.TemplateView
 
-import com.google.android.ads.nativetemplates.NativeTemplateStyle
 import java.lang.NullPointerException
 import android.text.format.DateFormat
 import androidx.appcompat.app.AppCompatActivity
@@ -97,6 +89,7 @@ class ChartFragment : Fragment() {
             }
             .withAdListener(object : AdListener() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
+                    setupErrorUi()
                     Log.d("ChartFragment", "ad failed to load")
                     buttonsIsEnabled(true)
                 }
@@ -189,6 +182,7 @@ class ChartFragment : Fragment() {
         val chartStateObserver = Observer<Int> {
             chart.visibility = it
         }
+        viewModel.networkError = {setupErrorUi()}
 
         viewModel.priceData.observe(viewLifecycleOwner, priceDataObserver)
         viewModel.secName.observe(viewLifecycleOwner, secNameObserver)
@@ -230,7 +224,12 @@ class ChartFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        adTemplate.destroyNativeAd()
+        try {
+            adTemplate.destroyNativeAd()
+        } catch (e: NullPointerException) {
+            Log.d("ChartFragment", "Unable to destroy ad because it was not set")
+        }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -290,6 +289,14 @@ class ChartFragment : Fragment() {
         setupNextUi()
         viewModel.chartState.value = View.INVISIBLE
         viewModel.adState.value = View.VISIBLE
+    }
+
+    fun setupErrorUi() {
+        viewModel.isLoading.value = false
+        if(context != null) {
+            Toast.makeText(context, getString(R.string.load_failed), Toast.LENGTH_SHORT).show()
+        }
+        setupNextUi()
     }
 
     private fun setSumTv(sum: Float) {

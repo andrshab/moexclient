@@ -27,4 +27,5 @@
     <string name="fast">Быстро</string>
     <string name="normal">Нормально</string>
     <string name="slow">Медленно</string>
+    <string name="load_failed">Загрузка не удалась</string>
 </resources>
