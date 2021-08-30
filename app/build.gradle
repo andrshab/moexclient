@@ -1,7 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
-    id 'androidx.navigation.safeargs.kotlin'
+    id 'androidx.navigation.safeargs'
 }
 apply plugin: 'kotlin-kapt'
 
@@ -9,7 +9,7 @@ android {
     compileSdk 30
 
     defaultConfig {
-        applicationId "com.example.moexclient"
+        applicationId "com.moexclient.app"
         minSdk 24
         targetSdk 30
         versionCode 1
@@ -72,7 +72,7 @@ dependencies {
     implementation "com.airbnb.android:lottie:4.1.0"
 
     //AdMob
-    implementation 'com.google.android.gms:play-services-ads:20.2.0'
+    implementation 'com.google.android.gms:play-services-ads:20.3.0'
     implementation project(':nativetemplates')
 
     implementation 'androidx.core:core-ktx:1.6.0'
