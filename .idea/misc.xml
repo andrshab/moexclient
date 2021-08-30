@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/Professional/AndroidStudioProjects/MoexClient/app/src/main/res/drawable/ic_launcher_foreground.xml" value="0.16354166666666667" />
         <entry key="..\:/Users/Professional/AndroidStudioProjects/MoexClient/app/src/main/res/drawable/toggle_button.xml" value="0.2890625" />
         <entry key="..\:/Users/Professional/AndroidStudioProjects/MoexClient/app/src/main/res/layout-land/fragment_chart.xml" value="0.33" />
         <entry key="..\:/Users/Professional/AndroidStudioProjects/MoexClient/app/src/main/res/layout/activity_main.xml" value="0.14270833333333333" />
@@ -15,10 +16,13 @@
         <entry key="..\:/Users/Professional/AndroidStudioProjects/MoexClient/app/src/main/res/layout/numberpicker_horizontal.xml" value="0.14479166666666668" />
         <entry key="..\:/Users/Professional/AndroidStudioProjects/MoexClient/app/src/main/res/menu/menu.xml" value="0.27291666666666664" />
         <entry key="..\:/Users/Professional/AndroidStudioProjects/MoexClient/app/src/main/res/menu/menu_records.xml" value="0.27291666666666664" />
+        <entry key="..\:/Users/Professional/AndroidStudioProjects/MoexClient/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.2890625" />
+        <entry key="..\:/Users/Professional/AndroidStudioProjects/MoexClient/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.2890625" />
         <entry key="..\:/Users/Professional/AndroidStudioProjects/MoexClient/app/src/main/res/xml/root_preferences.xml" value="0.27291666666666664" />
         <entry key="..\:/Users/Professional/AndroidStudioProjects/MoexClient/nativetemplates/src/main/res/drawable/gnt_outline_shape.xml" value="0.2890625" />
         <entry key="..\:/Users/Professional/AndroidStudioProjects/MoexClient/nativetemplates/src/main/res/layout/gnt_medium_template_view.xml" value="0.27291666666666664" />
         <entry key="..\:/Users/Professional/AndroidStudioProjects/MoexClient/nativetemplates/src/main/res/layout/gnt_small_template_view.xml" value="0.14270833333333333" />
+        <entry key="..\:/Users/Professional/AndroidStudioProjects/MoexClient/nativetemplates/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.2890625" />
       </map>
     </option>
   </component>
