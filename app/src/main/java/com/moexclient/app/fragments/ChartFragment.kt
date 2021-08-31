@@ -226,7 +226,7 @@ class ChartFragment : Fragment() {
         super.onDestroy()
         try {
             adTemplate.destroyNativeAd()
-        } catch (e: NullPointerException) {
+        } catch (e: Exception) {
             Log.d("ChartFragment", "Unable to destroy ad because it was not set")
         }
 
